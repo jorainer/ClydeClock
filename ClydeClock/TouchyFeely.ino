@@ -12,7 +12,7 @@ void clydeReleased(uint8_t l) {
     return;
   }
   // only if the RGB light is on...
-  if( clyde.current_colour[ 0 ] > 0 | clyde.current_colour[ 1 ] > 0 | clyde.current_colour[ 2 ] > 0 ){
+  if( clyde.current_colour[ 0 ] > 0 || clyde.current_colour[ 1 ] > 0 || clyde.current_colour[ 2 ] > 0 ){
     switch(l) {
     case 0:
       // cycle red

@@ -1,60 +1,140 @@
 // this file contains some basic functions.
 
+// similar as cycleRGB, just for the white light.
+// require global parameters:
+// need:
+//  - time when the step started   : wl_step_start
+//  - duration of the step.        : wl_step_durations array
+//  - intensity at the step_start  : wl_step_start_intensity
+//  - intensity at the end of step : wl_step_intensities array
+// calculate:
+//  - difference in intensity / step duration: that's the change of intensity per ms
+//  - set the intensity: current time - step start time * difference in intensity
+// NOTE: eventually calculate the "per step intensity increment" outside this function.
+void fadeWhiteLight(){
+  if( wl_current_step == 0 || wl_current_step > wl_number_steps ){
+    wl_current_step = 0;
+    return;   // return if we're not supposed to fade the light or are finished with fading.
+  }
+  //uint32_t now = millis();
+  uint32_t time_in_cycle_step = millis() - wl_step_start;
+  if( time_in_cycle_step==0 )
+    time_in_cycle_step = 1;
+  // check if we're still in this step or if we have to move to the next one.
+  if( time_in_cycle_step > wl_step_durations[ ( wl_current_step - 1 ) ] ){
+    wl_current_step++;
+    // just make sure we still have some steps...
+    if( wl_current_step > wl_number_steps ){
+#ifdef BASIC_DEBUG
+      Serial << "Basic- fadeWhiteLight done with the cycle b" << endl;
+#endif
+      wl_current_step=0;
+      return;
+    }
+    wl_step_start = millis();
+    wl_step_start_intensity = wl_intensity;
+    time_in_cycle_step = 1;  // set the time in step to 1 ms
+  }
+  // calculate the increment in intensity per ms.
+  float intensity_increment = ( wl_step_intensities[ ( wl_current_step - 1 ) ] - wl_step_start_intensity ) / wl_step_durations[ ( wl_current_step - 1 ) ]; // float or would int16_t also do?
+  // calculate the actual intensity...
+  wl_intensity = wl_step_start_intensity + time_in_cycle_step * intensity_increment;
+#ifdef BASIC_DEBUG
+  Serial << "fadeWhiteLight: intensity_increment: " << intensity_increment << " calculated light: " << wl_intensity << endl;
+#endif
+  // make sure we're not out of range... can that happen for a uint_8???
+  if( wl_intensity > 255 ){
+    wl_intensity = 255;
+  }
+  if( wl_intensity < 0 ){
+    wl_intensity = 0;
+  }
+  clyde.setLight( wl_intensity );
+}
+
+//void startFadeWhiteLight(uint8_t *intens, uint16_t *durations ){
+void startFadeWhiteLight(uint8_t intens[], uint32_t durations[] ){
+#ifdef BASIC_DEBUG
+  Serial << "Basic- startFadeWhiteLight called" << endl;
+#endif
+  wl_current_step = 1; // initialize the step, so function fadeWhiteLight will actually fade.
+  wl_step_start_intensity = wl_intensity;
+  wl_number_steps = sizeof(durations)/sizeof(durations[0]);  // define the number of steps we will go through.
+  wl_step_start = millis();
+  // copy the contents of the arrays to the global variables wl_step_durations and wl_step_intensities.
+  for( int i=0; i < wl_number_steps; i++ ){
+    wl_step_intensities[ i ] = intens[ i ];
+    wl_step_durations[ i ] = durations[ i ];
+  }
+  // re-allocate storage depending on the size of submitted arrays.
+  //wl_step_intensities = (uint8_t*)realloc( wl_step_intensities, sizeof( intens ) );
+  //Serial << "got before " << wl_step_intensities[0] << endl;
+  //wl_step_intensities = intens;
+  //Serial << "got after " << wl_step_intensities[0] << endl;
+  //wl_step_durations = (uint16_t*)realloc( wl_step_durations, sizeof( durations ) );
+  //wl_step_durations = durations;
+}
 
 // cycles through a pre-defined set of colors in a pre-defined time.
+// functionality is similar to fadeWhiteLight above...
 // this should be called by the "update" function.
-// global variables I depend on:
-// + current_step   ... in order to know which color we want to reach.
-// + step_start     ... the time when the current step started.
-// + step_start_r, step_start_g, step_start_b the colors of the (last) step.
-// + step_colors    ... the array of rgb values.
-// + step_durations ... the array of durations for each step.
+// need:
+//  - time when the step started   : step_start
+//  - duration of the step.        : step_durations array
+//  - intensity at the step_start  : step_start_r, g, b
+//  - intensity at the end of step : step_colors array
+// calculate:
+//  - difference in intensity / step duration: that's the change of intensity per ms
+//  - set the intensity: current time - step start time * difference in intensity
 void cycleThroughRGBColors( ){
-
   // if the step if 0 we don't do anything. everything > 0 means we're in a cycle.
-  // we also return if the current step is larger than we have colors/steps.
+  // we also return if the current step is larger than we have colors/steps in the cycle.
   // btw... sizeof( step_durations ) / sizeof( step_durations[ 0 ] ) is the C style of getting the length of an array.
-  if( current_step==0 | current_step > ( sizeof( step_durations ) / sizeof( step_durations[ 0 ] ) ) ){
+  if( current_step==0 || current_step > number_steps ){
+    current_step=0;
     return;
   }
-
-  uint32_t now = millis();
-  uint32_t time_in_cycle_step = now - step_start;  // needs that step_start is defined...
+  uint32_t time_in_cycle_step = millis() - step_start;  // needs that step_start is defined...
   // check if we're still in this step or if we have to move to the next one.
   if( time_in_cycle_step > step_durations[ ( current_step - 1 ) ] ){
     // move on to the next step.
     current_step++;
     // just make sure we still have some steps...
-    if( current_step > sizeof( step_durations ) / sizeof( step_durations[ 0 ] ) ){
+    if( current_step > number_steps ){
+#ifdef BASIC_DEBUG
       Serial << "Basic- cycleThroughRGBColors done with the cycle b" << endl;
+#endif
+      current_step=0;
       return;
     }
-    step_start = now;
+    step_start = millis();
     step_start_r = clyde.current_colour[ 0 ];
     step_start_g = clyde.current_colour[ 1 ];
     step_start_b = clyde.current_colour[ 2 ];
     time_in_cycle_step = 1;  // set the time in step to 1 ms
   }
-  // calculate the color difference, i.e. the difference between the step_start color and the
-  // color we want to get to.
-  int16_t diff_color_r = step_colors[ (current_step-1) * 3 ] - step_start_r;
-  int16_t diff_color_g = step_colors[ ( (current_step-1) * 3 ) + 1 ] - step_start_g;
-  int16_t diff_color_b = step_colors[ ( (current_step-1) * 3 ) + 2 ] - step_start_b;
-  // the color is the start color + the time we spent in the step * with the difference
-  // between the r color value we want to reach and the r color value at the beginning
-  // divided by the time duration of the step.
-  int16_t r = step_start_r + ( time_in_cycle_step / step_durations[ ( current_step - 1 )] * diff_color_r );
+  // calculate the color increment per ms. could be placed outside.
+  float increment_r = ( step_colors[ ( current_step - 1 )*3 ] - step_start_r ) / step_durations[ ( current_step - 1 ) ]; // float or would int16_t also do?
+  float increment_g = ( step_colors[ ( current_step - 1 )*3 + 1 ] - step_start_g ) / step_durations[ ( current_step - 1 ) ]; // float or would int16_t also do?
+  float increment_b = ( step_colors[ ( current_step - 1 )*3 + 2 ] - step_start_b ) / step_durations[ ( current_step - 1 ) ]; // float or would int16_t also do?
+  // calculate the actual colors...
+  uint8_t r = step_start_r + time_in_cycle_step * increment_r;
+  uint8_t g = step_start_g + time_in_cycle_step * increment_g;
+  uint8_t b = step_start_b + time_in_cycle_step * increment_b;
+  // debug...
+#ifdef BASIC_DEBUG
+  Serial << "cycleThroughRGBColors: increment_r " << increment_r << " r " << r << endl;
+  Serial << "cycleThroughRGBColors: increment_g " << increment_g << " g " << g << endl;
+  Serial << "cycleThroughRGBColors: increment_b " << increment_b << " b " << b << endl;
+#endif
   if( r > 255 )
     r = 255;
   if( r < 0 )
     r = 0;
-  // now the same for g and b...
-  int16_t g = step_start_g + ( time_in_cycle_step / step_durations[ ( current_step - 1 )] * diff_color_g );
   if( g > 255 )
     g = 255;
   if( g < 0 )
     g = 0;
-  int16_t b = step_start_b + ( time_in_cycle_step / step_durations[ ( current_step - 1 )] * diff_color_b );
   if( b > 255 )
     b = 255;
   if( b < 0 )
@@ -63,81 +143,25 @@ void cycleThroughRGBColors( ){
   clyde.setEyeRGB( r, g, b );
 }
 
-// similar as cycleRGB, just for the white light.
-// require global parameters:
-void fadeWhiteLight(){
-  if( wl_current_step == 0 | wl_current_step > ( sizeof( wl_step_durations ) / sizeof( wl_step_durations[ 0 ] ) ) ){
-    wl_current_step = 0;
-    return;   // return if we did not yet start or are finished with fading.
-  }
-    
-  uint32_t now = millis();
-  uint32_t time_in_cycle_step = now - wl_step_start;
-  if( time_in_cycle_step==0 )
-    time_in_cycle_step = 1;
-  // check if we're still in this step or if we have to move to the next one.
-  if( time_in_cycle_step > wl_step_durations[ ( wl_current_step - 1 ) ] ){
-    // move on to the next step.
-    wl_current_step++;
-    // just make sure we still have some steps...
-    if( wl_current_step > ( sizeof( wl_step_durations ) / sizeof( wl_step_durations[ 0 ] ) ) ){
-      Serial << "Basic- fadeWhiteLight done with the cycle b" << endl;
-      wl_current_step=0;
-      return;
-    }
-    wl_step_start = now;
-    time_in_cycle_step = 1;  // set the time in step to 1 ms
-  }
-  // calculate the color difference, i.e. the difference between the step_start color and the
-  // color we want to get to.
-  Serial << "Basic- fadeWhiteLight wl_intensity a: " << wl_intensity << " end: " << wl_step_intensities[ (wl_current_step-1) ] << " step " << wl_current_step << " end[0]: " << wl_step_intensities[0] << endl;
-  //int16_t
-  float diff_intensity = wl_step_intensities[ (wl_current_step-1) ] - wl_intensity;
-  Serial << "diff_intensity: " << diff_intensity << endl;
-  float to_add = ( time_in_cycle_step / wl_step_durations[ ( wl_current_step -1 ) ] ) * diff_intensity;
-  Serial << "to_add: " << to_add << endl;
-  uint8_t wl_intensity=wl_intensity + (uint8_t)to_add;
-  Serial << "Basic- fadeWhiteLight wl_intensity b: " << wl_intensity << endl;
-  if( wl_intensity > 255 ){
-    wl_intensity = 255;
-  }
-  if( wl_intensity < 0 ){
-    wl_intensity = 0;
-  }
-  // change the light if we got up to here.
-  Serial << "Basic- fadeWhiteLight wl_intensity c: " << wl_intensity << endl;
-  clyde.setLight( wl_intensity );
-}
-
-//void startFadeWhiteLight(uint8_t *intens, uint16_t *durations ){
-void startFadeWhiteLight(uint8_t intens[], uint16_t durations[] ){
-  Serial << "Basic- startFadeWhiteLight called" << endl;
-  wl_current_step = 1; // initialize the step, so function fadeWhiteLight will actually fade.
-  wl_step_start = millis();
-  // re-allocate storage depending on the size of submitted arrays.
-  //wl_step_intensities = (uint8_t*)realloc( wl_step_intensities, sizeof( intens ) );
-  Serial << "got before " << wl_step_intensities[0] << endl;
-  wl_step_intensities = intens;
-  Serial << "got after " << wl_step_intensities[0] << endl;
-  //wl_step_durations = (uint16_t*)realloc( wl_step_durations, sizeof( durations ) );
-  wl_step_durations = durations;
-}
-
 // just start a color cycle and initialize the parameters (i.e. global variables)
 // s_colors and s_durations have to be arrays (even if they have only length 1).
-void startRGBCycle( uint8_t s_colors[], uint16_t s_durations[] ){
+void startRGBCycle( uint8_t s_colors[], uint32_t s_durations[] ){
+#ifdef BASIC_DEBUG
   Serial << "Basic- startRGBCycle called" << endl;
+#endif
   current_step = 1;
+  number_steps = sizeof( s_durations )/sizeof( s_durations[0] );
   step_start_r = clyde.current_colour[ 0 ]; // red value from which we start.
   step_start_g = clyde.current_colour[ 1 ]; // green value from which we start.
   step_start_b = clyde.current_colour[ 2 ]; // blue value from which we start.
   step_start = millis();
-  // re-allocate storage depending on the size of submitted arrays.
-  //step_colors = (uint8_t*)realloc( step_colors, sizeof( s_colors ) );
-  step_colors = s_colors;
-  //step_durations = (uint16_t*)realloc( step_durations, sizeof( s_durations ) );
-  step_durations = s_durations;
-  //cycleThroughRGBColors( ); will call that in the update call anyways
+  // copy the content of the submitted arrays to the global variables
+  for( int i=0; i < number_steps; i++ ){
+    step_durations[ i ] = s_durations[ i ];
+  }
+  for( int i=0; i < number_steps * 3 ; i++ ){
+    step_colors[ i ] = s_colors[ i ];
+  }
 }
 
 // stop a color cycle. Will essentially just set the number of steps to 0
@@ -145,7 +169,6 @@ void stopCycle(){
   current_step = 0;
   wl_current_step = 0;
 }
-
 
 // switches the light.
 // if off -> switch on eye
@@ -156,7 +179,7 @@ void stopCycle(){
 void switchLights(){
   if( wl_intensity==0 ){
     // white light is off.
-    if( clyde.current_colour[ 0 ] > 0 | clyde.current_colour[ 1 ] > 1 | clyde.current_colour[ 2 ] > 0 ){
+    if( clyde.current_colour[ 0 ] > 0 || clyde.current_colour[ 1 ] > 1 || clyde.current_colour[ 2 ] > 0 ){
       // got LED on, turn on white light.
       wl_intensity = 255;
       clyde.setLight( wl_intensity );
@@ -166,7 +189,7 @@ void switchLights(){
     }
   }else{
     // white light is on.
-    if( clyde.current_colour[ 0 ] > 0 | clyde.current_colour[ 1 ] > 1 | clyde.current_colour[ 2 ] > 0 ){
+    if( clyde.current_colour[ 0 ] > 0 || clyde.current_colour[ 1 ] > 1 || clyde.current_colour[ 2 ] > 0 ){
       // got LED on, turn off led.
       uint8_t lightoff [3] = {0, 0, 0};
       startRGBCycle( lightoff, fadetime );
@@ -175,7 +198,7 @@ void switchLights(){
       wl_intensity = 0;
       clyde.setLight( wl_intensity );
     }
-  }  
+  }
 }
 
 void switchWL(){
@@ -183,10 +206,14 @@ void switchWL(){
     //wl_intensity = 255;
     //clyde.setLight( wl_intensity );
     uint8_t newwl[1]={255};
+#ifdef BASIC_DEBUG
     Serial << "Basic- switchWL turn on" << endl;
+#endif
     startFadeWhiteLight( newwl, fadetime );
   }else{
+#ifdef BASIC_DEBUG
     Serial << "Basic- switchWL turn off" << endl;
+#endif
     //wl_intensity = 0;
     uint8_t newwl[1]={0};
     //clyde.setLight( wl_intensity );
@@ -194,6 +221,20 @@ void switchWL(){
   }
 }
 
+
+// start a sunrise RGB cycle
+void sunrise(){
+  uint8_t sunrise_colors[ 21 ] = { 19, 17, 28, 39, 34, 57, 78, 69, 114, 46, 108, 181, 168, 142, 127, 255, 166, 48, 255, 210, 66 };
+  uint32_t sunrise_durations[ 7 ] = {30000, 60000, 60000, 60000, 60000, 60000, 60000};
+  startRGBCycle( sunrise_colors, sunrise_durations );
+}
+
+// start a sunset RGB cycle
+void sunset(){
+  uint8_t sunset_colors[ 27 ] = { 242, 103, 31, 201, 27, 38, 156, 15, 95, 96, 4, 122, 22, 10, 71, 12, 5, 35, 5, 0, 15, 0, 0, 5, 0, 0, 0 };
+  uint32_t sunset_durations[ 9 ] = {30000, 30000, 40000, 60000, 60000, 60000, 60000, 60000, 60000};
+  startRGBCycle( sunset_colors, sunset_durations );
+}
 
 /* uint32_t myabs( uint32_t a ){ */
 /*   if( a < 0 ) */

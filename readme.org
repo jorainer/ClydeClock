@@ -1,8 +1,8 @@
-#+TITLE:Clyde Clock 
+#+TITLE:Clyde Clock
 #+AUTHOR: Johannes Rainer
 #+email: johannes.rainer@i-med.ac.at
 #+OPTIONS: ^:{}
-#+PROPERTY: exports code 
+#+PROPERTY: exports code
 #+PROPERTY: session *R*
 #+PROPERTY: noweb yes
 #+PROPERTY: results output
@@ -41,9 +41,11 @@
 
 ** Configuration
 
++ *!* Adapt =ClydeTouchyFeely(1)= and =ClydeAfraidDark(2)= in /ClydeClock.ino/ (lines 31 and 35, respectively) depending on where you installed the /TouchyFeely/ and the /Afraid of the dark/ modules.
+
 + Use one of the legs instead of the /eye/ to switch the lights on or off: setting the =leg_switch= variable to a value from 0-5 will cause the respective leg to be used as the /switch/. This is useful for Clydes with a buggy IR sensor in the eye.
 
-
++ Define custom sunset or sunrise colors and duration in /Basic.ino/'s =sunrise= and =sunset= functions.
 
 ** Files and functions
 
@@ -53,11 +55,15 @@
 
   - =void fadeWhiteLight()=: similar to the function above, allows to cycle the white light intensities through a pre-defined set of intensities (for pre-defined durations). This function is called by the =update= function, the intensity steps and durations can be defined with the function =startFadeWhiteLight=.
 
-  - =void startRGBCycle( const uint8_t * s_colors, const uint16_t *s_durations )=: sets the colors and durations for the color cycle. =s_colors= should be an array with r,g,b values from 0 to 255, =s_durations= an array with the time (in ms) to reach the defined color (length of the array should thus be length of =*s_durations= / 3).
+  - =void startRGBCycle( uint8_t s_colors[], uint32_t s_durations[] )=: sets the colors and durations for the color cycle. =s_colors= should be an array with r,g,b values from 0 to 255, =s_durations= an array with the time (in ms) to reach the defined color (length of the array should thus be length of =*s_durations= / 3).
 
-  - =void startFadeWhiteLight( const uint8_t *intens, const uint16_t *durations )=: same as above, just for the white light. Also, since only a single light intensity is defined instead of r, g and b values, the length of =*intens= and =*durations= have to match.
+  - =void startFadeWhiteLight( uint8_t intens[], uint32_t durations[] )=: same as above, just for the white light. Also, since only a single light intensity is defined instead of r, g and b values, the length of =*intens= and =*durations= have to match.
 
   - =void stopCycle()=: just resets the cycle step for rgb and white light and thus exits any cycle.
+
+  - =void sunrise()=: defines sunrise colors and starts an RGB cycle through these.
+
+  - =void sunset()=: defines sunset colors and starts an RGB cycle through these.
 
   - =void switchLights()=: function to switch the white light and rgb light on and off.
 

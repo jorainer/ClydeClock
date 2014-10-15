@@ -10,7 +10,8 @@
  * - ClydeDev
  * - Streaming
  * - MPR121 & I2Cdev
- *
+ * - Time
+ * - TimeAlarms
  * October, 2014
  *
  */
@@ -23,6 +24,15 @@
 #include <ClydeTouchyFeely.h>
 #include <ClydeAfraidDark.h>
 
+// enable debugging of the Basic.ino
+#define BASIC_DEBUG
+
+// to enable the "clock" stuff...
+#define ENABLE_CLOCK
+#ifdef ENABLE_CLOCK
+#include <Time.h>
+#include <TimeAlarms.h>
+#endif
 
 // -- clyde dev
 ClydeDev clyde = ClydeDev();
@@ -34,45 +44,28 @@ boolean tf_enabled = false;
 // afraid of the dark module in module port 2
 ClydeAfraidDark afraiddark = ClydeAfraidDark(2);
 boolean ad_enabled = false;
-
-// these constants seem to be accessible in all functions.
-// -- behaviour
-//long last_blink = 0;
-//boolean blink_on = false;
-//float hue_num = ClydeDev::hue_green;
-//int light_num = 0;         // that's the white light
-//boolean hue_dir = true;
-//boolean light_dir = true;
-//boolean red_dir = true;
-//boolean green_dir = true;
-//boolean blue_dir = true;
-//float intensity = 0.3;
 boolean currently_pressed = false;
-//uint8_t start_r = 0;
-//uint8_t start_g = 0;
-//uint8_t start_b = 0;
 
 // that's my global variables.
-uint16_t fadetime [1] = {1000};         // default time for color fading.
-uint8_t max_cylce_length = 10;          // maximal number of cycles.
+uint32_t fadetime [1] = {1000};         // default time for color fading.
+static const uint8_t max_steps = 12;    // max number of allowed steps; need this to pre-allocate the memory.
 // for the white light:
-int wl_current_step = 0;                // current brightness step for the white light.
+uint8_t wl_current_step = 0;            // current brightness step for the white light.
+uint8_t wl_number_steps = 0;            // the number of steps of the cycle.
 uint32_t wl_step_start = millis();      // when was the step started?
+uint8_t wl_step_start_intensity = 0;    // the intensity at the start of a cycle step.
 uint8_t wl_intensity = 0;               // the current brightness of the white light.
-uint8_t* wl_step_intensities={0};
-uint16_t* wl_step_durations={0};
-//uint8_t* wl_step_intensities=(uint8_t*)malloc(sizeof(uint8_t));   // the array with the brightness values to cycle through.
-//uint16_t* wl_step_durations=(uint16_t*)malloc(sizeof(uint16_t));    // the duration (ms) of each brightness-step.
+uint8_t wl_step_intensities[max_steps]; // the array with the brightness values to cycle through.
+uint32_t wl_step_durations[max_steps];  // the duration (ms) for each brightness step.
 // for the RGB light:
-int current_step = 0;                   // current step for the cycle through RGB values.
+uint8_t current_step = 0;               // current step for the cycle through RGB values.
+uint8_t number_steps = 0;               // the number of steps.
 uint32_t step_start = millis();         // the time when the cycle step started.
-uint8_t step_start_r = 0;               // the red intensity.
-uint8_t step_start_g = 0;               // the green intensity.
-uint8_t step_start_b = 0;               // the blue intensity.
-//uint8_t* step_colors = (uint8_t*)malloc(sizeof(uint8_t)*3);           // the colors for the RGB color cycle.
-//uint16_t* step_durations =(uint16_t*)malloc(sizeof(uint16_t));       // the duration (ms) of each RGB-cycle-step.
-uint8_t* step_colors = {0,0,0};
-uint16_t* step_durations = {0};
+uint8_t step_start_r = 0;               // the red intensity at the beginning of a cycle step.
+uint8_t step_start_g = 0;               // the green intensity at the beginning of a cycle step.
+uint8_t step_start_b = 0;               // the blue intensity at the beginning of a cycle step.
+uint8_t step_colors[max_steps*3];       // the array with the RGB values to cycle through.
+uint32_t step_durations[max_steps];     // the array with the durations for each cycle step.
 
 // TouchyFeely related:
 uint8_t leg_switch = 2;  // set this to a value from 0-5 if you want to use a leg as the light switch instead of the eye... e.g. if the eye is buggy, like the one of my Clyde.
@@ -87,13 +80,11 @@ uint8_t COLORBREWER_PINK [ 3 ] = { 240, 2, 127 };  // not really in RColorBrewer
 void setup() {
 
   // inistialize variables:
-  wl_step_intensities[0] = 0;
-  wl_step_durations = fadetime;
-  step_colors[0] = 0;
-  step_colors[1] = 0;
-  step_colors[2] = 0;
-  step_durations = fadetime;
-  
+  memset((void*)&wl_step_intensities[0], 0, sizeof( uint8_t )*max_steps );
+  memset((void*)&wl_step_durations[0], 0, sizeof( uint32_t )*max_steps );
+  memset((void*)&step_colors[0], 0, sizeof( uint8_t )*max_steps*3 );
+  memset((void*)&step_durations[0], 0, sizeof( uint32_t )*max_steps );
+
   Serial.begin(9600);
   // comment the line below if you don't want serial communication.
   while(!Serial);
@@ -138,7 +129,7 @@ void loop() {
   //cycleThroughRGBColors();
   // the same for the white light
   fadeWhiteLight();
-  
+
   clyde.update();
 
   if(tf_enabled) touchyfeely.update();
