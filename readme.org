@@ -1,0 +1,92 @@
+#+TITLE:Clyde Clock 
+#+AUTHOR: Johannes Rainer
+#+email: johannes.rainer@i-med.ac.at
+#+OPTIONS: ^:{}
+#+PROPERTY: exports code 
+#+PROPERTY: session *R*
+#+PROPERTY: noweb yes
+#+PROPERTY: results output
+#+PROPERTY: tangle yes
+#+STARTUP: overview
+#+INFOJS_OPT: view:t toc:t ltoc:t mouse:underline buttons:0 path:http://thomasf.github.io/solarized-css/org-info.min.js
+#+HTML_HEAD: <link rel='stylesheet' type='text/css' href='http://thomasf.github.io/solarized-css/solarized-light.min.css' />
+#+LATEX_HEADER: \usepackage[backend=bibtex,style=chem-rsc,hyperref=true]{biblatex}
+#+LATEX_HEADER: \usepackage{parskip}
+#+LATEX_HEADER: \usepackage{tabu}
+#+LATEX_HEADER: \setlength{\textwidth}{17.0cm}
+#+LATEX_HEADER: \setlength{\hoffset}{-2.5cm}
+#+LATEX_HEADER: \setlength{\textheight}{22cm}
+#+LATEX_HEADER: \setlength{\voffset}{-1.5cm}
+#+LATEX_HEADER: \addbibresource{~/Documents/Unison/bib/references.bib}
+# #+LATEX_HEADER: \usepackage{verbatim}
+#+LATEX_HEADER: \usepackage{inconsolata}
+#+LATEX_HEADER: \definecolor{lightgrey}{HTML}{F0F0F0}
+#+LATEX_HEADER: \definecolor{solarizedlightbg}{HTML}{FCF4DC}
+#+LATEX_HEADER: \makeatletter
+# #+LATEX_HEADER: \def\verbatim@font{\scriptsize\ttfamily}
+#+LATEX_HEADER: \makeatother
+#+FILETAGS: :project:private:
+-----
+
+* Clyde Clock
+
+** Requirements
+
++ The great =ClydeDev= library from RobotGrrl (https://github.com/RobotGrrl/ClydeDev.git).
++ The =Streaming= (http://arduiniana.org/libraries/streaming/) library.
++ The =Time= (https://github.com/PaulStoffregen/Time.git) library.
++ The =TimeAlarms= (https://www.pjrc.com/teensy/td_libs_TimeAlarms.html) library.
++ Remove the original =Clyde= library from the Arduino libraries folder.
++ Add all the libraries above to the Arduino libraries.
+
+** Configuration
+
++ Use one of the legs instead of the /eye/ to switch the lights on or off: setting the =leg_switch= variable to a value from 0-5 will cause the respective leg to be used as the /switch/. This is useful for Clydes with a buggy IR sensor in the eye.
+
+
+
+** Files and functions
+
++ /Basic.ino/: provides basic functions.
+
+  - =void cycleThroughRGBColors()=: cycles through the colors defined by the global variable =step_colors= for the pre-defined durations (global variable =step_durations=). This function is intended to be called in the =update= function and requires global parameters to be set (e.g. /via/ =startRGBCycle=).
+
+  - =void fadeWhiteLight()=: similar to the function above, allows to cycle the white light intensities through a pre-defined set of intensities (for pre-defined durations). This function is called by the =update= function, the intensity steps and durations can be defined with the function =startFadeWhiteLight=.
+
+  - =void startRGBCycle( const uint8_t * s_colors, const uint16_t *s_durations )=: sets the colors and durations for the color cycle. =s_colors= should be an array with r,g,b values from 0 to 255, =s_durations= an array with the time (in ms) to reach the defined color (length of the array should thus be length of =*s_durations= / 3).
+
+  - =void startFadeWhiteLight( const uint8_t *intens, const uint16_t *durations )=: same as above, just for the white light. Also, since only a single light intensity is defined instead of r, g and b values, the length of =*intens= and =*durations= have to match.
+
+  - =void stopCycle()=: just resets the cycle step for rgb and white light and thus exits any cycle.
+
+  - =void switchLights()=: function to switch the white light and rgb light on and off.
+
++ /ClydeClock.ino/: the main file.
+
++ /Eye.ino/: functions related to the eye (handler functions).
+
++ /TouchyFeely.ino/: contains the handler function to be called when one of Clyde's legs is touched.
+
+  - =void clydeTouched(uint8_t l)=: the handler function called if a leg of Clyde is touched. The function will change the rgb light to a pre-defined color depending on which leg was touched. Also, if =leg_switch= is set to a value from 0 to 5, it calls the =switchLights= function (useful for those Clydes for which the eye does no longer work...).
+
+  - =void clydeReleased(uint8_t l)=: the handler function called if a leg of Clyde is touched.
+
+** TODOs
+
+*** TODO Write the =Clocky.ino= file.
+
+- This should contain all time related stuff.
+
+*** TODO Write the =Basic.ino= file [0/0].
+
+- This should contain all basic and commonly used commands:
+  - [X] a function to enable a timed color change similar to the sunset cycle of the original Clyde: =cycleThroughRGBColors=.
+  - [ ] a similar function as above, just for HSI instead of RGB.
+  - [ ] a function to fade the white light to a pre-defined intensity (in a pre-defined time period).
+
+*** TODO Write the =ClydeClock.ino= file.
+
+*** TODO Check functions:					   :noexport:
+
+- [ ] =cycleThroughRGBColors= and =startRGBCycle=.
+- [ ] =fadeWhiteLight= and =startFadeWhiteLight=.
