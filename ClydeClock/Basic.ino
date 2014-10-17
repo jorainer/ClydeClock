@@ -26,7 +26,7 @@ void fadeWhiteLight(){
     // just make sure we still have some steps...
     if( wl_current_step > wl_number_steps ){
 #ifdef BASIC_DEBUG
-      Serial << "Basic- fadeWhiteLight done with the cycle b" << endl;
+      Serial << "Basic: fadeWhiteLight done with the cycle b" << endl;
 #endif
       wl_current_step=0;
       return;
@@ -55,7 +55,7 @@ void fadeWhiteLight(){
 //void startFadeWhiteLight(uint8_t *intens, uint16_t *durations ){
 void startFadeWhiteLight(uint8_t intens[], uint32_t durations[] ){
 #ifdef BASIC_DEBUG
-  Serial << "Basic- startFadeWhiteLight called" << endl;
+  Serial << "Basic: startFadeWhiteLight called" << endl;
 #endif
   wl_current_step = 1; // initialize the step, so function fadeWhiteLight will actually fade.
   wl_step_start_intensity = wl_intensity;
@@ -102,7 +102,7 @@ void cycleThroughRGBColors( ){
     // just make sure we still have some steps...
     if( current_step > number_steps ){
 #ifdef BASIC_DEBUG
-      Serial << "Basic- cycleThroughRGBColors done with the cycle b" << endl;
+      Serial << "Basic: cycleThroughRGBColors done with the cycle b" << endl;
 #endif
       current_step=0;
       return;
@@ -147,7 +147,7 @@ void cycleThroughRGBColors( ){
 // s_colors and s_durations have to be arrays (even if they have only length 1).
 void startRGBCycle( uint8_t s_colors[], uint32_t s_durations[] ){
 #ifdef BASIC_DEBUG
-  Serial << "Basic- startRGBCycle called" << endl;
+  Serial << "Basic: startRGBCycle called" << endl;
 #endif
   current_step = 1;
   number_steps = sizeof( s_durations )/sizeof( s_durations[0] );
@@ -207,12 +207,12 @@ void switchWL(){
     //clyde.setLight( wl_intensity );
     uint8_t newwl[1]={255};
 #ifdef BASIC_DEBUG
-    Serial << "Basic- switchWL turn on" << endl;
+    Serial << "Basic: switchWL turn on" << endl;
 #endif
     startFadeWhiteLight( newwl, fadetime );
   }else{
 #ifdef BASIC_DEBUG
-    Serial << "Basic- switchWL turn off" << endl;
+    Serial << "Basic: switchWL turn off" << endl;
 #endif
     //wl_intensity = 0;
     uint8_t newwl[1]={0};
@@ -233,7 +233,12 @@ void sunrise(){
 void sunset(){
   uint8_t sunset_colors[ 27 ] = { 242, 103, 31, 201, 27, 38, 156, 15, 95, 96, 4, 122, 22, 10, 71, 12, 5, 35, 5, 0, 15, 0, 0, 5, 0, 0, 0 };
   uint32_t sunset_durations[ 9 ] = {30000, 30000, 40000, 60000, 60000, 60000, 60000, 60000, 60000};
+  // start the RGB color cycle
   startRGBCycle( sunset_colors, sunset_durations );
+  // in addition, switch on the white light... slowly...
+  uint8_t the_wl[ 1 ];
+  uint32_t the_wl_dur[460000];
+  startFadeWhiteLight( the_wl, the_wl_dur );
 }
 
 /* uint32_t myabs( uint32_t a ){ */
@@ -241,3 +246,4 @@ void sunset(){
 /*     return -a; */
 /*   return a; */
 /* } */
+

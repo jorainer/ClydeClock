@@ -39,13 +39,20 @@
 + Remove the original =Clyde= library from the Arduino libraries folder.
 + Add all the libraries above to the Arduino libraries.
 
-** Configuration
+** Configurations<<Configurations>>
 
 + *!* Adapt =ClydeTouchyFeely(1)= and =ClydeAfraidDark(2)= in /ClydeClock.ino/ (lines 31 and 35, respectively) depending on where you installed the /TouchyFeely/ and the /Afraid of the dark/ modules.
 
 + Use one of the legs instead of the /eye/ to switch the lights on or off: setting the =leg_switch= variable to a value from 0-5 will cause the respective leg to be used as the /switch/. This is useful for Clydes with a buggy IR sensor in the eye.
 
 + Define custom sunset or sunrise colors and duration in /Basic.ino/'s =sunrise= and =sunset= functions.
+
+** Functionality<<Functionality>>
+
++ Change the RGB light to a different color for each of Clyde's legs.
+
++ Use one of the legs as the light switch (instead of the eye; see [[Configurations]] section above).
+
 
 ** Files and functions
 
@@ -71,6 +78,10 @@
 
 + /Eye.ino/: functions related to the eye (handler functions).
 
++ /Mike.ino/: functions related to a connected microphone. This can be enables/disabled with the =#define ENABLE_MIKE= in /ClydeClock.ino/.
+
++ /Time.ino/: functions related to time and alarm clock. This can be enables/disabled with the =#define ENABLE_CLOCK= in /ClydeClock.ino/.
+
 + /TouchyFeely.ino/: contains the handler function to be called when one of Clyde's legs is touched.
 
   - =void clydeTouched(uint8_t l)=: the handler function called if a leg of Clyde is touched. The function will change the rgb light to a pre-defined color depending on which leg was touched. Also, if =leg_switch= is set to a value from 0 to 5, it calls the =switchLights= function (useful for those Clydes for which the eye does no longer work...).
@@ -79,7 +90,7 @@
 
 ** TODOs
 
-*** TODO Write the =Clocky.ino= file.
+*** TODO Write the =Time.ino= file.
 
 - This should contain all time related stuff.
 
@@ -92,7 +103,16 @@
 
 *** TODO Write the =ClydeClock.ino= file.
 
+*** TODO Write the =Mike.ino= file
+
+Some functionality related to the microphone...
+
++ [ ] Write a function that switches the light on and of with two claps.
++ [ ] Check the functions that detect claps. 
+
+
 *** TODO Check functions:					   :noexport:
 
 - [ ] =cycleThroughRGBColors= and =startRGBCycle=.
 - [ ] =fadeWhiteLight= and =startFadeWhiteLight=.
+*** TODO Check the microphone functionality.

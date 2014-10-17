@@ -34,6 +34,10 @@
 #include <TimeAlarms.h>
 #endif
 
+// to enable microphone relates things
+#define ENABLE_MIKE
+#define MIKE_DEBUG
+
 // -- clyde dev
 ClydeDev clyde = ClydeDev();
 
@@ -98,7 +102,6 @@ void setup() {
   clyde.setEyePressedHandler(clydeEyePressed);
   clyde.setEyeReleasedHandler(clydeEyeReleased);
 
-
   // -- touchy feely module
   touchyfeely.setDebugStream(&Serial, ClydeDev::DEBUG); // uncomment if you want to see debug text
   tf_enabled = touchyfeely.init();
@@ -109,7 +112,6 @@ void setup() {
     touchyfeely.setReleasedHandler(clydeReleased);
     touchyfeely.setDetectedHandler(clydeDetected);
   }
-
 
   // -- afraid of the dark module
   //afraiddark.setDebugStream(&Serial, ClydeDev::DEBUG); // uncomment if you want to see debug text
