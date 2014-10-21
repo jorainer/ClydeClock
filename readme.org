@@ -35,7 +35,7 @@
 + The great =ClydeDev= library from RobotGrrl (https://github.com/RobotGrrl/ClydeDev.git).
 + The =Streaming= (http://arduiniana.org/libraries/streaming/) library.
 + The =Time= (https://github.com/PaulStoffregen/Time.git) library.
-+ The =TimeAlarms= (https://www.pjrc.com/teensy/td_libs_TimeAlarms.html) library.
++ The modified =TimeAlarms= (https://github.com/jotsetung/TimeAlarms.git) library (allows to call function =serviceAlarms= directly).
 + Remove the original =Clyde= library from the Arduino libraries folder.
 + Add all the libraries above to the Arduino libraries.
 
@@ -56,15 +56,19 @@
 
 ** Files and functions
 
++ /Afraid.ino/: process readouts from the light sensor (AfraidOfTheDark).
+
+  - =checkForDarkness=: compares current and previous light intensities, and if they are below a certain threshold for a specified time it triggers the =sunset=.
+
 + /Basic.ino/: provides basic functions.
 
   - =void cycleThroughRGBColors()=: cycles through the colors defined by the global variable =step_colors= for the pre-defined durations (global variable =step_durations=). This function is intended to be called in the =update= function and requires global parameters to be set (e.g. /via/ =startRGBCycle=).
 
   - =void fadeWhiteLight()=: similar to the function above, allows to cycle the white light intensities through a pre-defined set of intensities (for pre-defined durations). This function is called by the =update= function, the intensity steps and durations can be defined with the function =startFadeWhiteLight=.
 
-  - =void startRGBCycle( uint8_t s_colors[], uint32_t s_durations[] )=: sets the colors and durations for the color cycle. =s_colors= should be an array with r,g,b values from 0 to 255, =s_durations= an array with the time (in ms) to reach the defined color (length of the array should thus be length of =*s_durations= / 3).
+  - =void startRGBCycle( uint8_t s_colors[], uint32_t s_durations[], uint8_t no_steps )=: sets the colors and durations for the color cycle. =s_colors= should be an array with r,g,b values from 0 to 255, =s_durations= an array with the time (in ms) to reach the defined color (length of the array should thus be length of =*s_durations= / 3); =no_steps= should be the length of the =s_durations= array.
 
-  - =void startFadeWhiteLight( uint8_t intens[], uint32_t durations[] )=: same as above, just for the white light. Also, since only a single light intensity is defined instead of r, g and b values, the length of =*intens= and =*durations= have to match.
+  - =void startFadeWhiteLight( uint8_t intens[], uint32_t durations[], uint8_t no_steps )=: same as above, just for the white light. Also, since only a single light intensity is defined instead of r, g and b values, the length of =intens= and =durations= have to match and have to be equal to =no_steps=.
 
   - =void stopCycle()=: just resets the cycle step for rgb and white light and thus exits any cycle.
 
@@ -88,7 +92,7 @@
 
   - =void clydeReleased(uint8_t l)=: the handler function called if a leg of Clyde is touched.
 
-** TODOs
+** TODOs							   :noexport:
 
 *** TODO Write the =Time.ino= file.
 
@@ -102,7 +106,7 @@
   - [ ] a function to fade the white light to a pre-defined intensity (in a pre-defined time period).
 
 *** TODO Write the =ClydeClock.ino= file.
-
+    
 *** TODO Write the =Mike.ino= file
 
 Some functionality related to the microphone...
@@ -113,6 +117,8 @@ Some functionality related to the microphone...
 
 *** TODO Check functions:					   :noexport:
 
-- [ ] =cycleThroughRGBColors= and =startRGBCycle=.
-- [ ] =fadeWhiteLight= and =startFadeWhiteLight=.
+- [X] =cycleThroughRGBColors= and =startRGBCycle=.
+- [X] =fadeWhiteLight= and =startFadeWhiteLight=.
+- [X] =checkForSunset=: kind of OK; light intensities are however pretty low...
+
 *** TODO Check the microphone functionality.

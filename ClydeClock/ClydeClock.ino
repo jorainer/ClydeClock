@@ -25,7 +25,7 @@
 #include <ClydeAfraidDark.h>
 
 // enable debugging of the Basic.ino
-#define BASIC_DEBUG
+//#define BASIC_DEBUG
 
 // to enable the "clock" stuff...
 #define ENABLE_CLOCK
@@ -33,6 +33,12 @@
 #include <Time.h>
 #include <TimeAlarms.h>
 #endif
+
+//#define ENABLE_EYE
+//#define EYE_DEBUG
+
+#define AFRAID_DARK_DEBUG
+//#define TOUCHY_FEELY_DEBUG
 
 // to enable microphone relates things
 #define ENABLE_MIKE
@@ -91,7 +97,7 @@ void setup() {
 
   Serial.begin(9600);
   // comment the line below if you don't want serial communication.
-  while(!Serial);
+  //while(!Serial);
   // waits for 5 seconds to properly start all modules.
   delay(5000);
 
@@ -99,11 +105,12 @@ void setup() {
   //clyde.setDebugStream(&Serial, ClydeDev::DEBUG); // uncomment if you want to see debug text
   clyde.init();
 
+#ifdef ENABLE_EYE
   clyde.setEyePressedHandler(clydeEyePressed);
   clyde.setEyeReleasedHandler(clydeEyeReleased);
-
+#endif
   // -- touchy feely module
-  touchyfeely.setDebugStream(&Serial, ClydeDev::DEBUG); // uncomment if you want to see debug text
+  //touchyfeely.setDebugStream(&Serial, ClydeDev::DEBUG); // uncomment if you want to see debug text
   tf_enabled = touchyfeely.init();
 
   if(tf_enabled) {
@@ -117,6 +124,12 @@ void setup() {
   //afraiddark.setDebugStream(&Serial, ClydeDev::DEBUG); // uncomment if you want to see debug text
   ad_enabled = afraiddark.init();
 
+#ifdef ENABLE_CLOCK
+  // initialize time, alarms etc.
+  timeInit();
+#endif
+
+  
   Serial << "Hello! :3" << endl;
 
   // initialize lights.
@@ -127,18 +140,18 @@ void setup() {
 // the main loop of clyde...
 void loop() {
 
+  clyde.update();
   // check if we are in some color cycle and if so update the colors accordingly
-  //cycleThroughRGBColors();
+  cycleThroughRGBColors();
   // the same for the white light
   fadeWhiteLight();
-
-  clyde.update();
 
   if(tf_enabled) touchyfeely.update();
 
   if(ad_enabled) {
     afraiddark.update();
-
+    checkForDarkness();
+    
     // uncomment this if you want the light sensor to control the intensity
     // of the rgb light... the result is a little glitchy though, as it is
     // using the raw sensor values.
@@ -151,6 +164,10 @@ void loop() {
 
   }
 
+#ifdef ENABLE_CLOCK
+  Alarm.serviceAlarms();
+  //Alarm.delay(1);
+#endif
 }
 
 

@@ -1,8 +1,10 @@
+
+#ifdef ENABLE_EYE
 // run color select for eye pressed...
 void clydeEyePressed() {
- 
- Serial << "Callback- Eye Pressed!" << endl;
- 
+#ifdef EYE_DEBUG
+  Serial << "Callback- Eye Pressed!" << endl;
+#endif
  /* if(!currently_pressed) { */
  /*   start_r = clyde.current_colour[0]; */
  /*   start_g = clyde.current_colour[1]; */
@@ -50,13 +52,14 @@ void clydeEyePressed() {
 }
 
 void clydeEyeReleased() {
- 
+#ifdef EYE_DEBUG
   Serial << "Callback- Eye Released!" << endl;
- 
+#endif
   /* clyde.setEyeRGB(start_r, start_g, start_b); */
   
   /* currently_pressed = false; */
   
 }
 
+#endif
 

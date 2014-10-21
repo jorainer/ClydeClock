@@ -4,6 +4,7 @@
 
 #ifdef ENABLE_MIKE
 
+uint8_t mike_the_mic = A3;
 uint16_t signal_max = 0;
 uint16_t signal_min = 1024;
 uint8_t sample_time = 20;              // sample time in ms.
@@ -15,6 +16,7 @@ uint16_t PEAK_DURATION = 200;          // the maximal duration (in ms) of a shor
 uint8_t clap_count = 0;                // count claps.
 uint16_t PEAK_COUNT_WINDOW = 2000;     // the time window in which we count claps.
 uint16_t TRIGGER_DELAY = 500;          // the delay after the last clap that we wait for any potentially other noise peak.
+unsigned int sample;
 
 // this function is from adafruit
 // https://learn.adafruit.com/adafruit-microphone-amplifier-breakout/measuring-sound-levels
@@ -23,7 +25,7 @@ void micSample(){
   signal_max = 0;
   signal_min = 1024;
   uint32_t start_sample = millis();
-  while( millis() - start_sampl < sample_time ){
+  while( millis() - start_sample < sample_time ){
     sample = analogRead( mike_the_mic );
     if( sample < 1024 ){
       if( sample > signal_max )
@@ -66,7 +68,7 @@ void detectPeakStart(){
     Serial << "Mike: detected peak start." << endl;
 #endif
     is_loud = true;
-    peak_start=millis();
+    peak_start_millis=millis();
   }
 }
 
@@ -77,7 +79,7 @@ void detectPeakEnd(){
       Serial << "Mike: detected noise decrease." << endl;
 #endif
     is_loud = false;
-    if( ( millis() - peak_start ) < PEAK_DURATION ){
+    if( ( millis() - peak_start_millis ) < PEAK_DURATION ){
 #ifdef MIKE_DEBUG
       Serial << "Mike: looks like a peak." << endl;
 #endif
