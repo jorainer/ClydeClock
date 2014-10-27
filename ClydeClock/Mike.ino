@@ -8,7 +8,8 @@ uint8_t mike_the_mic = A3;
 uint16_t signal_max = 0;
 uint16_t signal_min = 1024;
 uint8_t sample_time = 20;              // sample time in ms.
-uint16_t NOISE_THRESHOLD = 600;
+uint16_t NOISE_THRESHOLD = 500;
+uint16_t NOISE_THRESHOLD_DIFF = 100;
 bool is_loud = false;                  // is true as long as the noise is above threshold.
 uint32_t peak_start_millis;            // the time (ms) when the start of a new peak has been detected.
 uint32_t last_peak_millis;             // the time when the last peak was detected.
@@ -40,6 +41,7 @@ void micSample(){
  * Listen for claps and trigger an event if (more than) one was detected.
  */
 void listenForClaps(){
+  micSample();
   detectPeakStart();
   detectPeakEnd();
   // ok, now we have counted claps and have recorded the start of the last peak.
@@ -47,10 +49,21 @@ void listenForClaps(){
     // wait for some time before triggering the event.
     if( ( millis() - last_peak_millis ) >= TRIGGER_DELAY ){
 #ifdef MIKE_DEBUG
-    Serial << "Mike: got more than one peak, triggering an event." << endl;
+      Serial << "Mike: got more than one peak, triggering an event." << endl;
 #endif
       // OK, now do something!
-      if( clap_count==2 ){}
+      switch( clap_count ){
+      case 2:
+	switchLights();
+	break;
+      case 3:
+	sunset();
+	break;
+      case 4:
+	sunrise();
+	break;
+      }
+      clap_count = 0;  // reset clap count.
     }
   }
 }
@@ -63,9 +76,10 @@ void listenForClaps(){
  */
 void detectPeakStart(){
   // use the signal_min and signal_max...
-  if( signal_max > NOISE_THRESHOLD && !is_loud ){
+  //  if( signal_max > NOISE_THRESHOLD && !is_loud ){
+  if( signal_max - signal_min > NOISE_THRESHOLD_DIFF && !is_loud ){
 #ifdef MIKE_DEBUG
-    Serial << "Mike: detected peak start." << endl;
+    Serial << "Mike: detected peak start. signal: " << signal_max-signal_min << endl;
 #endif
     is_loud = true;
     peak_start_millis=millis();
@@ -74,7 +88,8 @@ void detectPeakStart(){
 
 // if noise was below threshold
 void detectPeakEnd(){
-  if( signal_max < NOISE_THRESHOLD && is_loud ){
+  //  if( signal_max < NOISE_THRESHOLD && is_loud ){
+  if( signal_max - signal_min < NOISE_THRESHOLD && is_loud ){
 #ifdef MIKE_DEBUG
       Serial << "Mike: detected noise decrease." << endl;
 #endif

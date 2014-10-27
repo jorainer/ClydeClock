@@ -53,6 +53,7 @@
 
 + Use one of the legs as the light switch (instead of the eye; see [[Configurations]] section above).
 
++ If a microphone is available (as described in RobotGrrl's /ClydeDisco/ setup), use that to e.g. switch the lights (functionality defined in /Mike.ino/, function =listenForClaps=).
 
 ** Files and functions
 
@@ -84,6 +85,8 @@
 
 + /Mike.ino/: functions related to a connected microphone. This can be enables/disabled with the =#define ENABLE_MIKE= in /ClydeClock.ino/.
 
+  - =void listenForClaps=: function to evaluate and count noise/sound peaks and start an action depending on the number of e.g. claps in a certain time span.
+
 + /Time.ino/: functions related to time and alarm clock. This can be enables/disabled with the =#define ENABLE_CLOCK= in /ClydeClock.ino/.
 
 + /TouchyFeely.ino/: contains the handler function to be called when one of Clyde's legs is touched.
@@ -107,12 +110,14 @@
 
 *** TODO Write the =ClydeClock.ino= file.
     
-*** TODO Write the =Mike.ino= file
+*** DONE Write the =Mike.ino= file
+    CLOSED: [2014-10-27 Mon 19:29]
+    - State "DONE"       from "TODO"       [2014-10-27 Mon 19:29]
 
 Some functionality related to the microphone...
 
-+ [ ] Write a function that switches the light on and of with two claps.
-+ [ ] Check the functions that detect claps. 
++ [X] Write a function that switches the light on and of with two claps.
++ [X] Check the functions that detect claps. 
 
 
 *** TODO Check functions:					   :noexport:
@@ -121,4 +126,6 @@ Some functionality related to the microphone...
 - [X] =fadeWhiteLight= and =startFadeWhiteLight=.
 - [X] =checkForSunset=: kind of OK; light intensities are however pretty low...
 
-*** TODO Check the microphone functionality.
+*** DONE Check the microphone functionality.
+    CLOSED: [2014-10-27 Mon 19:29]
+    - State "DONE"       from "TODO"       [2014-10-27 Mon 19:29]

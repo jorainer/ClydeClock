@@ -43,6 +43,8 @@
 
 -   Use one of the legs as the light switch (instead of the eye; see 1.2 section above).
 
+-   If a microphone is available (as described in RobotGrrl's *ClydeDisco* setup), use that to e.g. switch the lights (functionality defined in *Mike.ino*, function `listenForClaps`).
+
 ## Files and functions<a id="sec-1-4"></a>
 
 -   *Afraid.ino*: process readouts from the light sensor (AfraidOfTheDark).
@@ -70,6 +72,7 @@
 -   *Eye.ino*: functions related to the eye (handler functions).
 
 -   *Mike.ino*: functions related to a connected microphone. This can be enables/disabled with the `#define ENABLE_MIKE` in *ClydeClock.ino*.
+    -   `void listenForClaps`: function to evaluate and count noise/sound peaks and start an action depending on the number of e.g. claps in a certain time span.
 
 -   *Time.ino*: functions related to time and alarm clock. This can be enables/disabled with the `#define ENABLE_CLOCK` in *ClydeClock.ino*.
 

@@ -3,7 +3,7 @@
 
 void timeInit(){
   // set the time manually...
-  setTime( 20, 10, 0, 1, 1, 11 );
+  setTime( 20, 3, 0, 1, 1, 11 );
   // start after 20 sec.
   //Alarm.timerOnce( 20, sunrise );
   // set the sunrise to start at hour, minute, second.

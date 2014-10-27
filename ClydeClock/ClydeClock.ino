@@ -34,6 +34,7 @@
 #include <TimeAlarms.h>
 #endif
 
+// enable the eye.
 //#define ENABLE_EYE
 //#define EYE_DEBUG
 
@@ -42,6 +43,7 @@
 
 // to enable microphone relates things
 #define ENABLE_MIKE
+
 #define MIKE_DEBUG
 
 // -- clyde dev
@@ -101,6 +103,12 @@ void setup() {
   // waits for 5 seconds to properly start all modules.
   delay(5000);
 
+  // initialize lights
+  wl_current_step=0;
+  wl_number_steps=0;
+  current_step=0;
+  number_steps=0;
+  
   // -- clyde!
   //clyde.setDebugStream(&Serial, ClydeDev::DEBUG); // uncomment if you want to see debug text
   clyde.init();
@@ -150,7 +158,7 @@ void loop() {
 
   if(ad_enabled) {
     afraiddark.update();
-    checkForDarkness();
+    //checkForDarkness();
     
     // uncomment this if you want the light sensor to control the intensity
     // of the rgb light... the result is a little glitchy though, as it is
@@ -168,6 +176,11 @@ void loop() {
   Alarm.serviceAlarms();
   //Alarm.delay(1);
 #endif
+
+#ifdef ENABLE_MIKE
+  listenForClaps();
+#endif
+  
 }
 
 
