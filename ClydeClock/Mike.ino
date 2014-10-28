@@ -9,13 +9,13 @@ uint16_t signal_max = 0;
 uint16_t signal_min = 1024;
 uint8_t sample_time = 20;              // sample time in ms.
 uint16_t NOISE_THRESHOLD = 500;
-uint16_t NOISE_THRESHOLD_DIFF = 100;
+uint16_t NOISE_THRESHOLD_DIFF = 140;   // the difference between max and min signal to trigger
 bool is_loud = false;                  // is true as long as the noise is above threshold.
 uint32_t peak_start_millis;            // the time (ms) when the start of a new peak has been detected.
 uint32_t last_peak_millis;             // the time when the last peak was detected.
 uint16_t PEAK_DURATION = 200;          // the maximal duration (in ms) of a short noise peak (clap).
 uint8_t clap_count = 0;                // count claps.
-uint16_t PEAK_COUNT_WINDOW = 2000;     // the time window in which we count claps.
+uint16_t PEAK_COUNT_WINDOW = 1500;     // the time window in which we count claps.
 uint16_t TRIGGER_DELAY = 500;          // the delay after the last clap that we wait for any potentially other noise peak.
 unsigned int sample;
 

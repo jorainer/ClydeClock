@@ -48,6 +48,11 @@
 
 + Define custom sunset or sunrise colors and duration in /Basic.ino/'s =sunrise= and =sunset= functions.
 
+
+** Usage and Notes
+
++ The touch sensor is reset each time the white light is either turned on or off. This causes a lag time of some seconds in which the touch sensor is unresponsive (which might be quite annoying if the legs are used as light switch).
+
 ** Functionality<<Functionality>>
 
 + Change the RGB light to a different color for each of Clyde's legs.

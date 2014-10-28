@@ -38,7 +38,7 @@
 //#define ENABLE_EYE
 //#define EYE_DEBUG
 
-#define AFRAID_DARK_DEBUG
+//#define AFRAID_DARK_DEBUG
 //#define TOUCHY_FEELY_DEBUG
 
 // to enable microphone relates things
@@ -70,6 +70,7 @@ uint8_t wl_number_steps = 0;            // the number of steps of the cycle.
 uint32_t wl_step_start = millis();      // when was the step started?
 uint8_t wl_step_start_intensity = 0;    // the intensity at the start of a cycle step.
 uint8_t wl_intensity = 0;               // the current brightness of the white light.
+uint8_t wl_previous_intensity = 0;
 uint8_t wl_step_intensities[max_steps]; // the array with the brightness values to cycle through.
 uint32_t wl_step_durations[max_steps];  // the duration (ms) for each brightness step.
 // for the RGB light:
@@ -155,10 +156,11 @@ void loop() {
   // check if we are in some color cycle and if so update the colors accordingly
   cycleThroughRGBColors();
   // the same for the white light
+  wl_previous_intensity = wl_intensity;  // just remember the white light before fading
   fadeWhiteLight();
   // reset the touchyfeely sensor to default values if white light is off.
-  if( wl_intensity==0 ){
-    touchyfeely.reset( false, TOUCH_LEVEL, RELEASE_LEVEL );
+  if( wl_intensity==0 && wl_previous_intensity > 0 ){
+    touchyfeely.reset( false, TOUCH_LEVEL, RELEASE_LEVEL ); // this reset causes some lag in which the sensor is unresponsive!
   }
 
   if(tf_enabled) touchyfeely.update();

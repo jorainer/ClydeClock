@@ -69,6 +69,7 @@ void startFadeWhiteLight(uint8_t intens[], uint32_t durations[], uint8_t no_step
 #endif
   // reset the touchy feely. that's similar to the original Clyde firmware...
   // we're reseting it to normal levels in the update call from ClydeClock, if white light is off.
+  // unfortunately, this reset causes a lag time in which the sensor is unresponsive.
   touchyfeely.reset( false, TOUCH_LEVEL*8, RELEASE_LEVEL*2);
 }
 

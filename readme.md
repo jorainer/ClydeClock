@@ -6,8 +6,9 @@
 <ul>
 <li><a href="#sec-1-1">1.1. Requirements</a></li>
 <li><a href="#sec-1-2">1.2. Configurations</a></li>
-<li><a href="#sec-1-3">1.3. Functionality</a></li>
-<li><a href="#sec-1-4">1.4. Files and functions</a></li>
+<li><a href="#sec-1-3">1.3. Usage and Notes</a></li>
+<li><a href="#sec-1-4">1.4. Functionality</a></li>
+<li><a href="#sec-1-5">1.5. Files and functions</a></li>
 </ul>
 </li>
 </ul>
@@ -22,7 +23,8 @@
 
 ## Requirements<a id="sec-1-1"></a>
 
--   The great `ClydeDev` library from RobotGrrl (<https://github.com/RobotGrrl/ClydeDev.git>).
+
+-   The modified `ClydeDev` library (<https://github.com/jotsetung/ClydeDev.git>; original from RobotGrrl).
 -   The `Streaming` (<http://arduiniana.org/libraries/streaming/>) library.
 -   The `Time` (<https://github.com/PaulStoffregen/Time.git>) library.
 -   The modified `TimeAlarms` (<https://github.com/jotsetung/TimeAlarms.git>) library (allows to call function `serviceAlarms` directly).
@@ -37,7 +39,11 @@
 
 -   Define custom sunset or sunrise colors and duration in *Basic.ino*'s `sunrise` and `sunset` functions.
 
-## Functionality<a id="Functionality"></a><a id="sec-1-3"></a>
+## Usage and Notes<a id="sec-1-3"></a>
+
+-   The touch sensor is reset each time the white light is either turned on or off. This causes a lag time of some seconds in which the touch sensor is unresponsive (which might be quite annoying if the legs are used as light switch).
+
+## Functionality<a id="Functionality"></a><a id="sec-1-4"></a>
 
 -   Change the RGB light to a different color for each of Clyde's legs.
 
@@ -45,7 +51,7 @@
 
 -   If a microphone is available (as described in RobotGrrl's *ClydeDisco* setup), use that to e.g. switch the lights (functionality defined in *Mike.ino*, function `listenForClaps`).
 
-## Files and functions<a id="sec-1-4"></a>
+## Files and functions<a id="sec-1-5"></a>
 
 -   *Afraid.ino*: process readouts from the light sensor (AfraidOfTheDark).
     -   `checkForDarkness`: compares current and previous light intensities, and if they are below a certain threshold for a specified time it triggers the `sunset`.
