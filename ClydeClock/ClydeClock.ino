@@ -52,6 +52,9 @@ ClydeDev clyde = ClydeDev();
 // -- touchy feely module in module port 1
 ClydeTouchyFeely touchyfeely = ClydeTouchyFeely(1);
 boolean tf_enabled = false;
+static const uint8_t TOUCH_LEVEL = 0x06;        // touch threshold of mpr121
+static const uint8_t RELEASE_LEVEL = 0x04;      // release threshold of mpr121
+
 
 // afraid of the dark module in module port 2
 ClydeAfraidDark afraiddark = ClydeAfraidDark(2);
@@ -108,7 +111,7 @@ void setup() {
   wl_number_steps=0;
   current_step=0;
   number_steps=0;
-  
+
   // -- clyde!
   //clyde.setDebugStream(&Serial, ClydeDev::DEBUG); // uncomment if you want to see debug text
   clyde.init();
@@ -137,7 +140,7 @@ void setup() {
   timeInit();
 #endif
 
-  
+
   Serial << "Hello! :3" << endl;
 
   // initialize lights.
@@ -153,13 +156,17 @@ void loop() {
   cycleThroughRGBColors();
   // the same for the white light
   fadeWhiteLight();
+  // reset the touchyfeely sensor to default values if white light is off.
+  if( wl_intensity==0 ){
+    touchyfeely.reset( false, TOUCH_LEVEL, RELEASE_LEVEL );
+  }
 
   if(tf_enabled) touchyfeely.update();
 
   if(ad_enabled) {
     afraiddark.update();
     //checkForDarkness();
-    
+
     // uncomment this if you want the light sensor to control the intensity
     // of the rgb light... the result is a little glitchy though, as it is
     // using the raw sensor values.
@@ -180,7 +187,7 @@ void loop() {
 #ifdef ENABLE_MIKE
   listenForClaps();
 #endif
-  
+
 }
 
 

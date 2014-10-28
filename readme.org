@@ -32,7 +32,8 @@
 
 ** Requirements
 
-+ The great =ClydeDev= library from RobotGrrl (https://github.com/RobotGrrl/ClydeDev.git).
+# + The great =ClydeDev= library from RobotGrrl (https://github.com/RobotGrrl/ClydeDev.git).
++ The modified =ClydeDev= library (https://github.com/jotsetung/ClydeDev.git; original from RobotGrrl).
 + The =Streaming= (http://arduiniana.org/libraries/streaming/) library.
 + The =Time= (https://github.com/PaulStoffregen/Time.git) library.
 + The modified =TimeAlarms= (https://github.com/jotsetung/TimeAlarms.git) library (allows to call function =serviceAlarms= directly).
@@ -109,7 +110,7 @@
   - [ ] a function to fade the white light to a pre-defined intensity (in a pre-defined time period).
 
 *** TODO Write the =ClydeClock.ino= file.
-    
+
 *** DONE Write the =Mike.ino= file
     CLOSED: [2014-10-27 Mon 19:29]
     - State "DONE"       from "TODO"       [2014-10-27 Mon 19:29]
@@ -117,7 +118,7 @@
 Some functionality related to the microphone...
 
 + [X] Write a function that switches the light on and of with two claps.
-+ [X] Check the functions that detect claps. 
++ [X] Check the functions that detect claps.
 
 
 *** TODO Check functions:					   :noexport:

@@ -67,13 +67,9 @@ void startFadeWhiteLight(uint8_t intens[], uint32_t durations[], uint8_t no_step
 #ifdef BASIC_DEBUG
   Serial << "Basic: startFadeWhiteLight called: no_steps: " << wl_number_steps << " step_start: " << wl_step_start_intensity << " step_intensity[0]: " << wl_step_intensities[0] << " intens[0]: " << intens[0] << endl;
 #endif
-  // re-allocate storage depending on the size of submitted arrays.
-  //wl_step_intensities = (uint8_t*)realloc( wl_step_intensities, sizeof( intens ) );
-  //Serial << "got before " << wl_step_intensities[0] << endl;
-  //wl_step_intensities = intens;
-  //Serial << "got after " << wl_step_intensities[0] << endl;
-  //wl_step_durations = (uint16_t*)realloc( wl_step_durations, sizeof( durations ) );
-  //wl_step_durations = durations;
+  // reset the touchy feely. that's similar to the original Clyde firmware...
+  // we're reseting it to normal levels in the update call from ClydeClock, if white light is off.
+  touchyfeely.reset( false, TOUCH_LEVEL*8, RELEASE_LEVEL*2);
 }
 
 // cycles through a pre-defined set of colors in a pre-defined time.
@@ -187,9 +183,12 @@ void switchLights(){
       // got LED on, turn on white light.
       uint8_t newwl[1]={255};
       startFadeWhiteLight( newwl, fadetime, 1 );
+      //      // reset the touchy feely. that's similar to the original Clyde firmware...
+      //touchyfeely.reset( false, TOUCH_LEVEL*8, RELEASE_LEVEL*2);
     }else{
       // all is off, turn on led.
       startRGBCycle( COLORBREWER_BLUE, fadetime, 1 );
+      //touchyfeely.reset( false, TOUCH_LEVEL, RELEASE_LEVEL);
     }
   }else{
     // white light is on.
@@ -202,6 +201,7 @@ void switchLights(){
       uint8_t newwl[1]={0};
       //clyde.setLight( wl_intensity );
       startFadeWhiteLight( newwl, fadetime, 1 );
+      //touchyfeely.reset( false, TOUCH_LEVEL, RELEASE_LEVEL);
     }
   }
 }
