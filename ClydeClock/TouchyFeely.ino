@@ -1,4 +1,8 @@
 // note, cycleRGB is defined in Behaviour.ino
+// multitouch:
+// - use an array to record which legs have been touched
+// - use a trigger delay after which an action will be triggered; depending on the legs
+//   that have been touched. Also, reset the array.
 
 //void clydeTouched(uint8_t l) {
 void clydeReleased(uint8_t l) {

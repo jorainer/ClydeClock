@@ -59,7 +59,10 @@
 
 + Use one of the legs as the light switch (instead of the eye; see [[Configurations]] section above).
 
++ Multitouch: different actions can be triggered by different combinations of legs that are touched.
+
 + If a microphone is available (as described in RobotGrrl's /ClydeDisco/ setup), use that to e.g. switch the lights (functionality defined in /Mike.ino/, function =listenForClaps=).
+
 
 ** Files and functions
 
