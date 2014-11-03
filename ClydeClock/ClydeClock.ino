@@ -53,7 +53,7 @@ ClydeDev clyde = ClydeDev();
 ClydeTouchyFeely touchyfeely = ClydeTouchyFeely(1);
 boolean tf_enabled = false;
 static const uint8_t TOUCH_LEVEL = 0x06;        // touch threshold of mpr121
-static const uint8_t RELEASE_LEVEL = 0x04;      // release threshold of mpr121
+static const uint8_t RELEASE_LEVEL = 0x04;      // release threshold of mpr121 (0x0A)
 
 
 // afraid of the dark module in module port 2

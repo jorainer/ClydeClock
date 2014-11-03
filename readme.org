@@ -138,3 +138,5 @@ Some functionality related to the microphone...
 *** DONE Check the microphone functionality.
     CLOSED: [2014-10-27 Mon 19:29]
     - State "DONE"       from "TODO"       [2014-10-27 Mon 19:29]
+*** TODO Check if setting the RELEASE_LEVEL to 0x0A helps preventing false positive touch detection.
+*** TODO If above is not the case, just allow double touches!

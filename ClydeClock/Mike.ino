@@ -15,7 +15,7 @@ uint32_t peak_start_millis;            // the time (ms) when the start of a new 
 uint32_t last_peak_millis;             // the time when the last peak was detected.
 uint16_t PEAK_DURATION = 200;          // the maximal duration (in ms) of a short noise peak (clap).
 uint8_t clap_count = 0;                // count claps.
-uint16_t PEAK_COUNT_WINDOW = 1500;     // the time window in which we count claps.
+uint16_t PEAK_COUNT_WINDOW = 1000;     // the time window in which we count claps.
 uint16_t TRIGGER_DELAY = 500;          // the delay after the last clap that we wait for any potentially other noise peak.
 unsigned int sample;
 
