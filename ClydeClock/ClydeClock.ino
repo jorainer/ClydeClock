@@ -39,7 +39,7 @@
 //#define EYE_DEBUG
 
 //#define AFRAID_DARK_DEBUG
-//#define TOUCHY_FEELY_DEBUG
+#define TOUCHY_FEELY_DEBUG
 
 // to enable microphone relates things
 #define ENABLE_MIKE
@@ -53,7 +53,10 @@ ClydeDev clyde = ClydeDev();
 ClydeTouchyFeely touchyfeely = ClydeTouchyFeely(1);
 boolean tf_enabled = false;
 static const uint8_t TOUCH_LEVEL = 0x06;        // touch threshold of mpr121
-static const uint8_t RELEASE_LEVEL = 0x04;      // release threshold of mpr121 (0x0A)
+static const uint8_t RELEASE_LEVEL = 0x0A;      // release threshold of mpr121 (0x0A) (was 0x04)
+uint32_t touch_array_last_touch_time = 0;
+uint8_t touch_array_touched_leg[ 8 ] = {0,0,0,0,0,0,0,0};
+uint16_t TOUCH_TRIGGER_DELAY = 500;  // trigger an action if the last
 
 
 // afraid of the dark module in module port 2
@@ -189,7 +192,8 @@ void loop() {
 #ifdef ENABLE_MIKE
   listenForClaps();
 #endif
-
+  // evaluate touches.
+  evalTouchTimeArray();
 }
 
 
