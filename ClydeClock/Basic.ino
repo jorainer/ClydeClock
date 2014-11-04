@@ -70,7 +70,7 @@ void startFadeWhiteLight(uint8_t intens[], uint32_t durations[], uint8_t no_step
   // reset the touchy feely. that's similar to the original Clyde firmware...
   // we're reseting it to normal levels in the update call from ClydeClock, if white light is off.
   // unfortunately, this reset causes a lag time in which the sensor is unresponsive.
-  touchyfeely.reset( false, TOUCH_LEVEL*8, RELEASE_LEVEL*2);
+  //touchyfeely.reset( false, TOUCH_LEVEL*8, RELEASE_LEVEL*2);
 }
 
 // cycles through a pre-defined set of colors in a pre-defined time.
@@ -184,8 +184,8 @@ void switchLights(){
       // got LED on, turn on white light.
       uint8_t newwl[1]={255};
       startFadeWhiteLight( newwl, fadetime, 1 );
-      //      // reset the touchy feely. that's similar to the original Clyde firmware...
-      //touchyfeely.reset( false, TOUCH_LEVEL*8, RELEASE_LEVEL*2);
+            // reset the touchy feely. that's similar to the original Clyde firmware...
+      touchyfeely.reset( false, TOUCH_LEVEL*2, RELEASE_LEVEL*2);
     }else{
       // all is off, turn on led.
       startRGBCycle( COLORBREWER_BLUE, fadetime, 1 );

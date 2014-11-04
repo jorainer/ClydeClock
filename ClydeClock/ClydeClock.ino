@@ -39,7 +39,7 @@
 //#define EYE_DEBUG
 
 //#define AFRAID_DARK_DEBUG
-#define TOUCHY_FEELY_DEBUG
+//#define TOUCHY_FEELY_DEBUG
 
 // to enable microphone relates things
 #define ENABLE_MIKE
@@ -56,7 +56,7 @@ static const uint8_t TOUCH_LEVEL = 0x06;        // touch threshold of mpr121
 static const uint8_t RELEASE_LEVEL = 0x0A;      // release threshold of mpr121 (0x0A) (was 0x04)
 uint32_t touch_array_last_touch_time = 0;
 uint8_t touch_array_touched_leg[ 8 ] = {0,0,0,0,0,0,0,0};
-uint16_t TOUCH_TRIGGER_DELAY = 500;  // trigger an action if the last
+uint16_t TOUCH_TRIGGER_DELAY = 600;  // trigger an action if the last
 
 
 // afraid of the dark module in module port 2
@@ -87,7 +87,8 @@ uint8_t step_colors[max_steps*3];       // the array with the RGB values to cycl
 uint32_t step_durations[max_steps];     // the array with the durations for each cycle step.
 
 // TouchyFeely related:
-uint8_t leg_switch = 2;  // set this to a value from 0-5 if you want to use a leg as the light switch instead of the eye... e.g. if the eye is buggy, like the one of my Clyde.
+//uint8_t leg_switch = 2;  // set this to a value from 0-5 if you want to use a leg as the light switch instead of the eye... e.g. if the eye is buggy, like the one of my Clyde.
+char leg_switch[1] = "";
 // Some pre-defined colors (from R's RColorBrewer package).
 uint8_t COLORBREWER_RED [ 3 ] = { 228, 26, 28 };
 uint8_t COLORBREWER_BLUE [ 3 ] = { 55, 126, 184 };
@@ -104,6 +105,9 @@ void setup() {
   memset((void*)&step_colors[0], 0, sizeof( uint8_t )*max_steps*3 );
   memset((void*)&step_durations[0], 0, sizeof( uint32_t )*max_steps );
 
+  // init leg switch...
+  strcat( leg_switch, "3" );
+  
   Serial.begin(9600);
   // comment the line below if you don't want serial communication.
   //while(!Serial);
