@@ -1,7 +1,7 @@
 // note, cycleRGB is defined in Behaviour.ino
 // Update: we require also a "double-touch" to avoid false positive triggers.
-uint32_t last_touch_time[ 6 ] = {0};
-uint8_t touch_counts[ 6 ] = {0};
+//uint32_t last_touch_time[ 6 ] = {0};
+//uint8_t touch_counts[ 6 ] = {0};
 
 // multitouch:
 // - use an array to record which legs have been touched
@@ -51,7 +51,7 @@ void clydeReleasedOld(uint8_t l) {
 
 void clydeReleased( uint8_t l ){
 #ifdef TOUCHY_FEELY_DEBUG
-  Serial << "Callback- released!" << l << endl;
+  Serial << "TouchyFeely: released! " << l << endl;
 #endif
   //checkTouch( l );
   addToTouchArray( l );
@@ -59,13 +59,13 @@ void clydeReleased( uint8_t l ){
 
 void clydeTouched(uint8_t l) {
 #ifdef TOUCHY_FEELY_DEBUG
-  Serial << "Callback- touched!" << l << endl;
+  Serial << "TouchyFeely: touched! " << l << endl;
 #endif
 }
 
 void clydeDetected(uint8_t l) {
 #ifdef TOUCHY_FEELY_DEBUG
-  Serial << "Callback- Detected!" << l << endl;
+  Serial << "TouchyFeely: Detected! " << l << endl;
 #endif
 }
 
@@ -111,28 +111,36 @@ void addToTouchArray( uint8_t leg ){
   // shift all values in the array
   for( int current_idx = 6; current_idx >= 0; current_idx-- ){
     Serial << "copy " << touch_array_touched_leg[ current_idx ] << " from " << current_idx << endl;
-    touch_array_touched_leg[ ( current_idx + 1 ) ] = touch_array_touched_leg[ current_idx ];
+    touch_array_touched_leg[( current_idx + 1 )] = touch_array_touched_leg[current_idx];
   }
   Serial << "done copying" << endl;
   // add the leg number to the stack and record the last touch time.
-  touch_array_touched_leg[ 0 ] = leg+1;
+  touch_array_touched_leg[0] = (leg+1);
   touch_array_last_touch_time = millis();
 }
 
 void evalTouchTimeArray(){
   // get the most recent entry in touch_array_times
-  if( ( millis() - touch_array_last_touch_time ) > TOUCH_TRIGGER_DELAY ){
+  if( touch_array_last_touch_time > 0 && ( millis() - touch_array_last_touch_time ) > TOUCH_TRIGGER_DELAY ){
     // evaluate the stack.
     // go through the array and report all duplets (i.e. double touches of the same leg)
     uint8_t lastleg=0;
-    char touch_string[4]; // should be touch_array_touched_leg/2
+    char touch_string[4]=""; // should be touch_array_touched_leg/2
     for( int i=0; i < 8; i++ ){
       if( lastleg!=touch_array_touched_leg[ i ] ){
 	lastleg = touch_array_touched_leg[ i ];
       }else{
+	// means the last record also touched this leg.
 	if( lastleg!=0 ){
 	  #ifdef TOUCHY_FEELY_DEBUG
 	  Serial << "evalTouchTimeArray: got twice " << lastleg << endl;
+	  #endif
+	  // append to the touch_string
+	  char current_leg_string[2]="";
+	  sprintf( current_leg_string, "%d", lastleg );
+	  strcat( touch_string, current_leg_string );
+	  #ifdef TOUCHY_FEELY_DEBUG
+	  Serial << "evalTouchTimeArray: the touch string is now " << touch_string << endl;
 	  #endif
 	  // report the lastleg, maybe add to character string?
 	  //int aInt = 368;
@@ -143,9 +151,15 @@ void evalTouchTimeArray(){
 	  //sprintf( num_str, "%d", lastleg );
 	  //strcat( touch_string, num_str );
 	}
-	lastleg = 0;  // set that to 31, so we're looking for a new duplet.
+	lastleg = 0;  // set that to 0, so we're looking for a new duplet.
       }
+      // reset the value...
+      touch_array_touched_leg[ i ] = 0;
     }
+#ifdef TOUCHY_FEELY_DEBUG
+    Serial << "evalTouchTimeArray: FINAL touch string: " << touch_string << endl;
+#endif
+
     //    if( strcmp( touch_string, "1" )==0 ){
     //#ifdef TOUCHY_FEELY_DEBUG
       //Serial << "evalTouchArray! got 1: " << touch_string << endl;
@@ -163,8 +177,5 @@ void evalTouchTimeArray(){
     // compare strings: strcmp( stringa, stringb), returns 0 if they are equal.
     // make a switch thing
     // reset the stack!
-    for( int i=0; i < 8; i++ ){
-      touch_array_touched_leg[ i ] = 0;
-    }
   }
 }
