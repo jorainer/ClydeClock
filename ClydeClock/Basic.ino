@@ -185,7 +185,7 @@ void switchLights(){
       uint8_t newwl[1]={255};
       startFadeWhiteLight( newwl, fadetime, 1 );
             // reset the touchy feely. that's similar to the original Clyde firmware...
-      touchyfeely.reset( false, TOUCH_LEVEL*2, RELEASE_LEVEL*2);
+      touchyfeely.reset( true, TOUCH_LEVEL*4, RELEASE_LEVEL*2);
     }else{
       // all is off, turn on led.
       startRGBCycle( COLORBREWER_BLUE, fadetime, 1 );

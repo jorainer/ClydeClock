@@ -6,47 +6,6 @@
 // - use a trigger delay after which an action will be triggered; depending on the legs
 //   that have been touched. Also, reset the array.
 
-//void clydeReleasedOld(uint8_t l) {
-//#ifdef TOUCHY_FEELY_DEBUG
-//  Serial << "Callback- released! " << l << ", leg switch would be " << leg_switch << endl;
-//#endif
-//  if( l==leg_switch ){
-//#ifdef TOUCHY_FEELY_DEBUG
-//    Serial << "got the switch leg" << endl;
-//#endif
-//    switchLights();
-//    //switchWL();
-//    return;
-//  }
-//  // only if the RGB light is on...
-//  if( clyde.current_colour[ 0 ] > 0 || clyde.current_colour[ 1 ] > 0 || clyde.current_colour[ 2 ] > 0 ){
-//    switch(l) {
-//    case 0:
-//      // cycle red
-//      startRGBCycle( COLORBREWER_RED, fadetime, 1 );
-//      break;
-//    case 1:
-//      // cycle green
-//      startRGBCycle( COLORBREWER_GREEN, fadetime, 1 );
-//      break;
-//    case 2:
-//      // cycle blue
-//      startRGBCycle( COLORBREWER_BLUE, fadetime, 1 );
-//      break;
-//    case 3:
-//      startRGBCycle( COLORBREWER_PURPLE, fadetime, 1 );
-//      break;
-//    case 4:
-//      startRGBCycle( COLORBREWER_ORANGE, fadetime, 1 );
-//      break;
-//    case 5:
-//      startRGBCycle( COLORBREWER_PINK, fadetime, 1 );
-//      break;
-//    }
-//  }
-//}
-
-
 void clydeReleased( uint8_t l ){
 #ifdef TOUCHY_FEELY_DEBUG
   Serial << "TouchyFeely: released! " << l << endl;
@@ -68,11 +27,10 @@ void clydeDetected(uint8_t l) {
 #endif
 }
 
-// alternative approach: push the leg number and the time of touch to an
-// array. if the most recent touch (always 0) is more than TOUCH_TRIGGER_DELAY ago,
-// evaluate the full array, but require always double touches (to avoid false positives).
-//boolean require_double_touch = true;
-//char touch_string[8];
+// alternative approach: push the leg number to an
+// array and record the last touch time. if the most recent touch
+// is more than TOUCH_TRIGGER_DELAY ago, evaluate the full array,
+// but require always double touches (to avoid false positives).
 
 // inserts the leg-number at position 0 in the array and shifts all previous numbers.
 void addToTouchArray( uint8_t leg ){
@@ -85,6 +43,10 @@ void addToTouchArray( uint8_t leg ){
   touch_array_last_touch_time = millis();
 }
 
+/*
+  Evaluate the array and trigger an event if we got double clicks. This
+  function should be called from the main update function.
+ */
 void evalTouchTimeArray(){
   // get the most recent entry in touch_array_times
   if( touch_array_last_touch_time == 0 )
@@ -125,23 +87,89 @@ void evalTouchTimeArray(){
 #endif
       switchLights();	  
     }else if( rgb_on && strcmp( touch_string, "1" )==0 ){
+#ifdef TOUCHY_FEELY_DEBUG
+      Serial << "evalTouchArray! got: " << touch_string << " fade to red." << endl;
+#endif
       startRGBCycle( COLORBREWER_RED, fadetime, 1 );
     }else if( rgb_on && strcmp( touch_string, "2" )==0 ){
+#ifdef TOUCHY_FEELY_DEBUG
+      Serial << "evalTouchArray! got: " << touch_string << " fade to red." << endl;
+#endif
       startRGBCycle( COLORBREWER_BLUE, fadetime, 1 );
     }else if( rgb_on && strcmp( touch_string, "3" )==0 ){
+#ifdef TOUCHY_FEELY_DEBUG
+      Serial << "evalTouchArray! got: " << touch_string << " fade to red." << endl;
+#endif
       startRGBCycle( COLORBREWER_GREEN, fadetime, 1 );
     }else if( rgb_on && strcmp( touch_string, "4" )==0 ){
+#ifdef TOUCHY_FEELY_DEBUG
+      Serial << "evalTouchArray! got: " << touch_string << " fade to red." << endl;
+#endif
       startRGBCycle( COLORBREWER_ORANGE, fadetime, 1 );
     }else if( rgb_on && strcmp( touch_string, "5" )==0 ){
+#ifdef TOUCHY_FEELY_DEBUG
+      Serial << "evalTouchArray! got: " << touch_string << " fade to red." << endl;
+#endif
       startRGBCycle( COLORBREWER_PURPLE, fadetime, 1 );
     }else if( rgb_on && strcmp( touch_string, "6" )==0 ){
+#ifdef TOUCHY_FEELY_DEBUG
+      Serial << "evalTouchArray! got: " << touch_string << " fade to red." << endl;
+#endif
       startRGBCycle( COLORBREWER_PINK, fadetime, 1 );
     }else if( rgb_on && strcmp( touch_string, "11" )==0 ){
+#ifdef TOUCHY_FEELY_DEBUG
+      Serial << "evalTouchArray! got: " << touch_string << " fade through all colors." << endl;
+#endif
       uint8_t the_colors[ 18 ] = {228, 26, 28, 240, 2, 127, 255, 127, 0, 152, 78, 163, 55, 126, 184, 77, 175, 74 };
       uint32_t the_times[ 6 ] = { 1000, 1000, 1000, 1000, 1000, 1000 };
       startRGBCycle( the_colors, the_times, 6 );       
     }else if( strcmp( touch_string, "22" ) ){
+#ifdef TOUCHY_FEELY_DEBUG
+      Serial << "evalTouchArray! got: " << touch_string << " start sunset." << endl;
+#endif
       sunset();
     }
   }
 }
+
+
+//void clydeReleasedOld(uint8_t l) {
+//#ifdef TOUCHY_FEELY_DEBUG
+//  Serial << "Callback- released! " << l << ", leg switch would be " << leg_switch << endl;
+//#endif
+//  if( l==leg_switch ){
+//#ifdef TOUCHY_FEELY_DEBUG
+//    Serial << "got the switch leg" << endl;
+//#endif
+//    switchLights();
+//    //switchWL();
+//    return;
+//  }
+//  // only if the RGB light is on...
+//  if( clyde.current_colour[ 0 ] > 0 || clyde.current_colour[ 1 ] > 0 || clyde.current_colour[ 2 ] > 0 ){
+//    switch(l) {
+//    case 0:
+//      // cycle red
+//      startRGBCycle( COLORBREWER_RED, fadetime, 1 );
+//      break;
+//    case 1:
+//      // cycle green
+//      startRGBCycle( COLORBREWER_GREEN, fadetime, 1 );
+//      break;
+//    case 2:
+//      // cycle blue
+//      startRGBCycle( COLORBREWER_BLUE, fadetime, 1 );
+//      break;
+//    case 3:
+//      startRGBCycle( COLORBREWER_PURPLE, fadetime, 1 );
+//      break;
+//    case 4:
+//      startRGBCycle( COLORBREWER_ORANGE, fadetime, 1 );
+//      break;
+//    case 5:
+//      startRGBCycle( COLORBREWER_PINK, fadetime, 1 );
+//      break;
+//    }
+//  }
+//}
+

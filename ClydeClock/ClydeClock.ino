@@ -28,7 +28,7 @@
 //#define BASIC_DEBUG
 
 // to enable the "clock" stuff...
-#define ENABLE_CLOCK
+//#define ENABLE_CLOCK
 #ifdef ENABLE_CLOCK
 #include <Time.h>
 #include <TimeAlarms.h>
@@ -39,12 +39,12 @@
 //#define EYE_DEBUG
 
 //#define AFRAID_DARK_DEBUG
-//#define TOUCHY_FEELY_DEBUG
+#define TOUCHY_FEELY_DEBUG
 
 // to enable microphone relates things
-#define ENABLE_MIKE
+//#define ENABLE_MIKE
 
-#define MIKE_DEBUG
+//#define MIKE_DEBUG
 
 // -- clyde dev
 ClydeDev clyde = ClydeDev();
@@ -111,8 +111,6 @@ void setup() {
   Serial.begin(9600);
   // comment the line below if you don't want serial communication.
   //while(!Serial);
-  // waits for 5 seconds to properly start all modules.
-  delay(5000);
 
   // initialize lights
   wl_current_step=0;
@@ -133,6 +131,7 @@ void setup() {
   tf_enabled = touchyfeely.init();
 
   if(tf_enabled) {
+    touchyfeely.reset( true, TOUCH_LEVEL, RELEASE_LEVEL );
     // these handlers are defined in TouchyFeely.ino
     touchyfeely.setTouchedHandler(clydeTouched);
     touchyfeely.setReleasedHandler(clydeReleased);
@@ -148,6 +147,8 @@ void setup() {
   timeInit();
 #endif
 
+  // waits for 5 seconds to properly start all modules.
+  delay(5000);
 
   Serial << "Hello! :3" << endl;
 
@@ -167,7 +168,7 @@ void loop() {
   fadeWhiteLight();
   // reset the touchyfeely sensor to default values if white light is off.
   if( wl_intensity==0 && wl_previous_intensity > 0 ){
-    touchyfeely.reset( false, TOUCH_LEVEL, RELEASE_LEVEL ); // this reset causes some lag in which the sensor is unresponsive!
+    touchyfeely.reset( true, TOUCH_LEVEL, RELEASE_LEVEL ); // this reset causes some lag in which the sensor is unresponsive!
   }
 
   if(tf_enabled) touchyfeely.update();
