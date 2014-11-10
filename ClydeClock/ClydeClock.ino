@@ -39,10 +39,10 @@
 //#define EYE_DEBUG
 
 //#define AFRAID_DARK_DEBUG
-#define TOUCHY_FEELY_DEBUG
+//#define TOUCHY_FEELY_DEBUG
 
 // to enable microphone relates things
-//#define ENABLE_MIKE
+#define ENABLE_MIKE
 
 //#define MIKE_DEBUG
 
@@ -52,11 +52,13 @@ ClydeDev clyde = ClydeDev();
 // -- touchy feely module in module port 1
 ClydeTouchyFeely touchyfeely = ClydeTouchyFeely(1);
 boolean tf_enabled = false;
-static const uint8_t TOUCH_LEVEL = 0x06;        // touch threshold of mpr121
+static const uint8_t TOUCH_LEVEL = 0x0A;        // touch threshold of mpr121m was 0x06
 static const uint8_t RELEASE_LEVEL = 0x0A;      // release threshold of mpr121 (0x0A) (was 0x04)
 uint32_t touch_array_last_touch_time = 0;
 uint8_t touch_array_touched_leg[ 8 ] = {0,0,0,0,0,0,0,0};
-uint16_t TOUCH_TRIGGER_DELAY = 600;  // trigger an action if the last
+uint16_t TOUCH_TRIGGER_DELAY = 600;             // trigger an action if the last
+uint8_t touch_counter = 0;                      // keep track of the total number of touches without pause
+uint8_t max_touch_counter_reset = 8;           // if we have more than this touches without a pause, then it's most likely the touchy feely sensor needs to be reset... thus calling reset.
 
 
 // afraid of the dark module in module port 2
@@ -167,9 +169,9 @@ void loop() {
   wl_previous_intensity = wl_intensity;  // just remember the white light before fading
   fadeWhiteLight();
   // reset the touchyfeely sensor to default values if white light is off.
-  if( wl_intensity==0 && wl_previous_intensity > 0 ){
+  /*  if( wl_intensity==0 && wl_previous_intensity > 0 ){
     touchyfeely.reset( true, TOUCH_LEVEL, RELEASE_LEVEL ); // this reset causes some lag in which the sensor is unresponsive!
-  }
+    }*/
 
   if(tf_enabled) touchyfeely.update();
 

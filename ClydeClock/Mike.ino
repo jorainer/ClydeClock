@@ -9,7 +9,7 @@ uint16_t signal_max = 0;
 uint16_t signal_min = 1024;
 uint8_t sample_time = 20;              // sample time in ms.
 uint16_t NOISE_THRESHOLD = 500;
-uint16_t NOISE_THRESHOLD_DIFF = 140;   // the difference between max and min signal to trigger
+uint16_t NOISE_THRESHOLD_DIFF = 200;   // the difference between max and min signal to trigger
 bool is_loud = false;                  // is true as long as the noise is above threshold.
 uint32_t peak_start_millis;            // the time (ms) when the start of a new peak has been detected.
 uint32_t last_peak_millis;             // the time when the last peak was detected.

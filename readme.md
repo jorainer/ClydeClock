@@ -41,7 +41,7 @@
 
 ## Usage and Notes<a id="sec-1-3"></a>
 
--   The touch sensor is reset each time the white light is either turned on or off. This causes a lag time of some seconds in which the touch sensor is unresponsive (which might be quite annoying if the legs are used as light switch).
+-   The touch sensor seems to be quite susceptible to noise; thus, it is reset after a certain amount of consecutive touches (without pause; this can be configured with the `max_touch_counter_reset` variable in the *ClyceClock.ino* file). Note that the reset can cause a lag time of some seconds in which the touch sensor is unresponsive (which might be quite annoying if the legs are used as light switch).
 
 ## Functionality<a id="Functionality"></a><a id="sec-1-4"></a>
 
@@ -49,7 +49,9 @@
 
 -   Use one of the legs as the light switch (instead of the eye; see 1.2 section above).
 
--   If a microphone is available (as described in RobotGrrl's *ClydeDisco* setup), use that to e.g. switch the lights (functionality defined in *Mike.ino*, function `listenForClaps`).
+-   Multitouch: different actions can be triggered by different combinations of legs that are touched.
+
+-   If a microphone is available (as described in RobotGrrl's *ClydeDisco* setup), use that to e.g. switch the lights (functionality defined in *Mike.ino*, function `listenForClaps`). Default setting: two claps: switch lights, three claps: start sunset, four claps: start sunrise.
 
 ## Files and functions<a id="sec-1-5"></a>
 
