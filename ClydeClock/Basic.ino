@@ -205,6 +205,8 @@ void switchLights(){
       //touchyfeely.reset( false, TOUCH_LEVEL, RELEASE_LEVEL);
     }
   }
+  // calling reset on the sensor...again.
+  touchyfeely.reset( touchyfeely_auto, TOUCH_LEVEL, RELEASE_LEVEL );
 }
 
 // start a sunrise RGB cycle

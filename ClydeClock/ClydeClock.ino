@@ -42,9 +42,9 @@
 //#define TOUCHY_FEELY_DEBUG
 
 // to enable microphone relates things
-#define ENABLE_MIKE
+//#define ENABLE_MIKE
 
-//#define MIKE_DEBUG
+#define MIKE_DEBUG
 
 // -- clyde dev
 ClydeDev clyde = ClydeDev();
@@ -52,13 +52,14 @@ ClydeDev clyde = ClydeDev();
 // -- touchy feely module in module port 1
 ClydeTouchyFeely touchyfeely = ClydeTouchyFeely(1);
 boolean tf_enabled = false;
-static const uint8_t TOUCH_LEVEL = 0x0A;        // touch threshold of mpr121m was 0x06
+static const uint8_t TOUCH_LEVEL = 4*0x0A;        // touch threshold of mpr121m was 0x06
 static const uint8_t RELEASE_LEVEL = 0x0A;      // release threshold of mpr121 (0x0A) (was 0x04)
 uint32_t touch_array_last_touch_time = 0;
 uint8_t touch_array_touched_leg[ 8 ] = {0,0,0,0,0,0,0,0};
 uint16_t TOUCH_TRIGGER_DELAY = 600;             // trigger an action if the last
 uint8_t touch_counter = 0;                      // keep track of the total number of touches without pause
 uint8_t max_touch_counter_reset = 8;           // if we have more than this touches without a pause, then it's most likely the touchy feely sensor needs to be reset... thus calling reset.
+boolean touchyfeely_auto = false;    // do auto confit on reset.
 
 
 // afraid of the dark module in module port 2
@@ -94,7 +95,8 @@ char leg_switch[1] = "";
 // Some pre-defined colors (from R's RColorBrewer package).
 uint8_t COLORBREWER_RED [ 3 ] = { 228, 26, 28 };
 uint8_t COLORBREWER_BLUE [ 3 ] = { 55, 126, 184 };
-uint8_t COLORBREWER_GREEN [ 3 ] = { 77, 175, 74 };
+//uint8_t COLORBREWER_GREEN [ 3 ] = { 77, 175, 74 };
+uint8_t COLORBREWER_GREEN [ 3 ] = { 0, 255, 0 };
 uint8_t COLORBREWER_PURPLE [ 3 ] = { 152, 78, 163 };
 uint8_t COLORBREWER_ORANGE [ 3 ] = { 255, 127, 0 };
 uint8_t COLORBREWER_PINK [ 3 ] = { 240, 2, 127 };  // not really in RColorBrewer...
@@ -108,7 +110,8 @@ void setup() {
   memset((void*)&step_durations[0], 0, sizeof( uint32_t )*max_steps );
 
   // init leg switch...
-  strcat( leg_switch, "3" );
+  //strcat( leg_switch, "3" );
+  strcat( leg_switch, "9" );
   
   Serial.begin(9600);
   // comment the line below if you don't want serial communication.
@@ -133,7 +136,7 @@ void setup() {
   tf_enabled = touchyfeely.init();
 
   if(tf_enabled) {
-    touchyfeely.reset( true, TOUCH_LEVEL, RELEASE_LEVEL );
+    touchyfeely.reset( touchyfeely_auto, TOUCH_LEVEL, RELEASE_LEVEL );
     // these handlers are defined in TouchyFeely.ino
     touchyfeely.setTouchedHandler(clydeTouched);
     touchyfeely.setReleasedHandler(clydeReleased);

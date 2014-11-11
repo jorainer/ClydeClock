@@ -17,7 +17,7 @@ void clydeReleased( uint8_t l ){
 #ifdef TOUCHY_FEELY_DEBUG
   Serial << "TouchyFeely: Calling RESET on the touchy feely! got in total " << touch_counter << " touches." << endl;
 #endif
-  touchyfeely.reset( true, TOUCH_LEVEL, RELEASE_LEVEL );
+  touchyfeely.reset( touchyfeely_auto, TOUCH_LEVEL, RELEASE_LEVEL );
   touch_counter=0;
   }
 }
@@ -107,27 +107,27 @@ void evalTouchTimeArray(){
       startRGBCycle( COLORBREWER_RED, fadetime, 1 );
     }else if( rgb_on && strcmp( touch_string, "2" )==0 ){
 #ifdef TOUCHY_FEELY_DEBUG
-      Serial << "evalTouchArray! got: " << touch_string << " fade to red." << endl;
+      Serial << "evalTouchArray! got: " << touch_string << " fade to blue." << endl;
 #endif
       startRGBCycle( COLORBREWER_BLUE, fadetime, 1 );
     }else if( rgb_on && strcmp( touch_string, "3" )==0 ){
 #ifdef TOUCHY_FEELY_DEBUG
-      Serial << "evalTouchArray! got: " << touch_string << " fade to red." << endl;
+      Serial << "evalTouchArray! got: " << touch_string << " fade to green." << endl;
 #endif
       startRGBCycle( COLORBREWER_GREEN, fadetime, 1 );
     }else if( rgb_on && strcmp( touch_string, "4" )==0 ){
 #ifdef TOUCHY_FEELY_DEBUG
-      Serial << "evalTouchArray! got: " << touch_string << " fade to red." << endl;
+      Serial << "evalTouchArray! got: " << touch_string << " fade to orange." << endl;
 #endif
       startRGBCycle( COLORBREWER_ORANGE, fadetime, 1 );
     }else if( rgb_on && strcmp( touch_string, "5" )==0 ){
 #ifdef TOUCHY_FEELY_DEBUG
-      Serial << "evalTouchArray! got: " << touch_string << " fade to red." << endl;
+      Serial << "evalTouchArray! got: " << touch_string << " fade to purple." << endl;
 #endif
       startRGBCycle( COLORBREWER_PURPLE, fadetime, 1 );
     }else if( rgb_on && strcmp( touch_string, "6" )==0 ){
 #ifdef TOUCHY_FEELY_DEBUG
-      Serial << "evalTouchArray! got: " << touch_string << " fade to red." << endl;
+      Serial << "evalTouchArray! got: " << touch_string << " fade to pink." << endl;
 #endif
       startRGBCycle( COLORBREWER_PINK, fadetime, 1 );
     }else if( rgb_on && strcmp( touch_string, "11" )==0 ){
