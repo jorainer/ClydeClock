@@ -42,9 +42,9 @@
 //#define TOUCHY_FEELY_DEBUG
 
 // to enable microphone relates things
-//#define ENABLE_MIKE
+#define ENABLE_MIKE
 
-#define MIKE_DEBUG
+//#define MIKE_DEBUG
 
 // -- clyde dev
 ClydeDev clyde = ClydeDev();
