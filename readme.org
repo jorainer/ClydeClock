@@ -63,6 +63,7 @@
 
 + If a microphone is available (as described in RobotGrrl's /ClydeDisco/ setup), use that to e.g. switch the lights (functionality defined in /Mike.ino/, function =listenForClaps=). Default setting: two claps: switch lights, three claps: start sunset, four claps: start sunrise.
 
++ Audio output: refer to the hardware setup guide from RobotGrrl's /ClydeDisco/. Audio output can be enabled with the =#ENABLE_SPEAK= in /ClydeClock.ino/.
 
 ** Files and functions
 
@@ -96,7 +97,9 @@
 
   - =void listenForClaps=: function to evaluate and count noise/sound peaks and start an action depending on the number of e.g. claps in a certain time span.
 
-+ /Time.ino/: functions related to time and alarm clock. This can be enables/disabled with the =#define ENABLE_CLOCK= in /ClydeClock.ino/.
++ /Speak.ino/: functions for audio output. This can be enabled/disabled with the =#define ENABLE_SPEAK= in /ClydeClock.ino/.
+
++ /Time.ino/: functions related to time and alarm clock. This can be enabled/disabled with the =#define ENABLE_CLOCK= in /ClydeClock.ino/.
 
 + /TouchyFeely.ino/: contains the handler function to be called when one of Clyde's legs is touched.
 
@@ -104,6 +107,7 @@
 
   - =void clydeReleased(uint8_t l)=: the handler function called if a leg of Clyde is touched.
     
+
 ** TODOs							   :noexport:
 
 *** TODO Write the =Time.ino= file.

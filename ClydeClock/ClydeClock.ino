@@ -24,27 +24,23 @@
 #include <ClydeTouchyFeely.h>
 #include <ClydeAfraidDark.h>
 
-// enable debugging of the Basic.ino
-//#define BASIC_DEBUG
-
-// to enable the "clock" stuff...
-//#define ENABLE_CLOCK
-#ifdef ENABLE_CLOCK
-#include <Time.h>
-#include <TimeAlarms.h>
-#endif
-
-// enable the eye.
-//#define ENABLE_EYE
+///////////////////////////
+// DEBUGGING STUFF:
+//#define BASIC_DEBUG      // enable debugging of the Basic.ino
 //#define EYE_DEBUG
-
 //#define AFRAID_DARK_DEBUG
 //#define TOUCHY_FEELY_DEBUG
-
-// to enable microphone relates things
-#define ENABLE_MIKE
-
 //#define MIKE_DEBUG
+//////////////////////////
+
+//////////////////////////
+// ENABLE VARIOUS ADDONS:
+#define ENABLE_CLOCK    // to enable the "clock" stuff...
+//#define ENABLE_EYE      // enable the eye.
+#define ENABLE_MIKE     // to enable microphone relates things
+//#define ENABLE_SPEAK    // enable sound output.
+//////////////////////////
+
 
 // -- clyde dev
 ClydeDev clyde = ClydeDev();
@@ -103,7 +99,7 @@ uint8_t COLORBREWER_PINK [ 3 ] = { 240, 2, 127 };  // not really in RColorBrewer
 
 void setup() {
 
-  // inistialize variables:
+  // initialize variables:
   memset((void*)&wl_step_intensities[0], 0, sizeof( uint8_t )*max_steps );
   memset((void*)&wl_step_durations[0], 0, sizeof( uint32_t )*max_steps );
   memset((void*)&step_colors[0], 0, sizeof( uint8_t )*max_steps*3 );
@@ -111,7 +107,7 @@ void setup() {
 
   // init leg switch...
   //strcat( leg_switch, "3" );
-  strcat( leg_switch, "9" );
+  strcat( leg_switch, "9" ); /// <--- set here the leg switch!!!
   
   Serial.begin(9600);
   // comment the line below if you don't want serial communication.
@@ -149,9 +145,14 @@ void setup() {
 
 #ifdef ENABLE_CLOCK
   // initialize time, alarms etc.
-  timeInit();
+  initializeClock();
 #endif
 
+#ifdef ENABLE_SPEAK
+  // initialize the audio out.
+  initializeSpeak();
+#endif
+  
   // waits for 5 seconds to properly start all modules.
   delay(5000);
 
@@ -195,13 +196,17 @@ void loop() {
   }
 
 #ifdef ENABLE_CLOCK
-  Alarm.serviceAlarms();
-  //Alarm.delay(1);
+  updateClock();
 #endif
 
 #ifdef ENABLE_MIKE
   listenForClaps();
 #endif
+
+#ifdef ENABLE_SPEAK
+  updateSpeak();
+#endif
+
   // evaluate touches.
   evalTouchTimeArray();
 }
