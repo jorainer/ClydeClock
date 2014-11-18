@@ -9,11 +9,11 @@ uint16_t signal_max = 0;
 uint16_t signal_min = 1024;
 uint8_t sample_time = 20;              // sample time in ms.
 uint16_t NOISE_THRESHOLD = 500;
-uint16_t NOISE_THRESHOLD_DIFF = 200;   // the difference between max and min signal to trigger
+uint16_t NOISE_THRESHOLD_DIFF = 180;   // the difference between max and min signal to trigger
 bool is_loud = false;                  // is true as long as the noise is above threshold.
 uint32_t peak_start_millis;            // the time (ms) when the start of a new peak has been detected.
 uint32_t last_peak_millis;             // the time when the last peak was detected.
-uint16_t PEAK_DURATION = 200;          // the maximal duration (in ms) of a short noise peak (clap).
+uint16_t PEAK_DURATION = 100;          // the maximal duration (in ms) of a short noise peak (clap).
 uint8_t clap_count = 0;                // count claps.
 uint16_t PEAK_COUNT_WINDOW = 1000;     // the time window in which we count claps.
 uint16_t TRIGGER_DELAY = 500;          // the delay after the last clap that we wait for any potentially other noise peak.
@@ -37,7 +37,7 @@ void micSample(){
   }
 }
 
-/* 
+/*
  * Listen for claps and trigger an event if (more than) one was detected.
  */
 void listenForClaps(){
@@ -72,7 +72,7 @@ void listenForClaps(){
 /* how to detect a clap: -> check the ClydeDev TouchyFeely...
  * - measure noise level, keep record of previous level.
  * - if previous noise level was below thresh and current is above -> record clap_start
- * - if previous noise level was above 
+ * - if previous noise level was above
  */
 void detectPeakStart(){
   // use the signal_min and signal_max...
