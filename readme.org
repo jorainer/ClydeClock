@@ -65,6 +65,8 @@
 
 + Audio output: refer to the hardware setup guide from RobotGrrl's /ClydeDisco/. Audio output can be enabled with the =#ENABLE_SPEAK= in /ClydeClock.ino/.
 
++ Using proximity detection using an HC-SR04 sensor in the eye instead of the IR setup of the original Clyde.
+
 ** Files and functions
 
 + /Afraid.ino/: process readouts from the light sensor (AfraidOfTheDark).
@@ -96,6 +98,8 @@
 + /Mike.ino/: functions related to a connected microphone. This can be enables/disabled with the =#define ENABLE_MIKE= in /ClydeClock.ino/.
 
   - =void listenForClaps=: function to evaluate and count noise/sound peaks and start an action depending on the number of e.g. claps in a certain time span.
+
++ /ProxySens.ino/: settings and functions related to the HC-SR04 ultrasound proximity sensor used to detect touches to the eye.
 
 + /Speak.ino/: functions for audio output. This can be enabled/disabled with the =#define ENABLE_SPEAK= in /ClydeClock.ino/.
 

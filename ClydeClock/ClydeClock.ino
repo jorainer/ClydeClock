@@ -31,6 +31,7 @@
 //#define AFRAID_DARK_DEBUG
 //#define TOUCHY_FEELY_DEBUG
 //#define MIKE_DEBUG
+#define PROXYSENS_DEBUG
 //////////////////////////
 
 //////////////////////////
@@ -39,6 +40,7 @@
 //#define ENABLE_EYE      // enable the eye.
 #define ENABLE_MIKE     // to enable microphone relates things
 //#define ENABLE_SPEAK    // enable sound output.
+#define ENABLE_PROXYSENS  // enable the HC-SR04 based proximity sensor.
 //////////////////////////
 
 
@@ -152,7 +154,10 @@ void setup() {
   // initialize the audio out.
   initializeSpeak();
 #endif
-  
+
+#ifdef ENABLE_PROXYSENS
+  initializeProxySens();
+#endif
   // waits for 5 seconds to properly start all modules.
   delay(5000);
 
@@ -207,6 +212,10 @@ void loop() {
   updateSpeak();
 #endif
 
+#ifdef ENABLE_PROXYSENS
+  updateProxySens();
+#endif
+  
   // evaluate touches.
   evalTouchTimeArray();
 }
