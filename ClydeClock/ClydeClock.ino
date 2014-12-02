@@ -31,7 +31,7 @@
 //#define AFRAID_DARK_DEBUG
 //#define TOUCHY_FEELY_DEBUG
 //#define MIKE_DEBUG
-//#define PROXYSENS_DEBUG
+#define PROXYSENS_DEBUG
 #define SPEAK_DEBUG
 //////////////////////////
 
@@ -41,7 +41,7 @@
 //#define ENABLE_EYE      // enable the eye.
 #define ENABLE_MIKE     // to enable microphone relates things
 #define ENABLE_SPEAK    // enable sound output.
-//#define ENABLE_PROXYSENS  // enable the HC-SR04 based proximity sensor.
+#define ENABLE_PROXYSENS  // enable the HC-SR04 based proximity sensor.
 //////////////////////////
 
 
@@ -111,7 +111,7 @@ void setup() {
   // init leg switch...
   //strcat( leg_switch, "3" );
   strcat( leg_switch, "9" ); /// <--- set here the leg switch!!!
-  
+
   Serial.begin(9600);
   // comment the line below if you don't want serial communication.
   //while(!Serial);
@@ -217,7 +217,7 @@ void loop() {
 #ifdef ENABLE_PROXYSENS
   updateProxySens();
 #endif
-  
+
   // evaluate touches.
   evalTouchTimeArray();
 }
