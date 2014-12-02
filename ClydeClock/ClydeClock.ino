@@ -31,7 +31,8 @@
 //#define AFRAID_DARK_DEBUG
 //#define TOUCHY_FEELY_DEBUG
 //#define MIKE_DEBUG
-#define PROXYSENS_DEBUG
+//#define PROXYSENS_DEBUG
+#define SPEAK_DEBUG
 //////////////////////////
 
 //////////////////////////
@@ -39,8 +40,8 @@
 #define ENABLE_CLOCK    // to enable the "clock" stuff...
 //#define ENABLE_EYE      // enable the eye.
 #define ENABLE_MIKE     // to enable microphone relates things
-//#define ENABLE_SPEAK    // enable sound output.
-#define ENABLE_PROXYSENS  // enable the HC-SR04 based proximity sensor.
+#define ENABLE_SPEAK    // enable sound output.
+//#define ENABLE_PROXYSENS  // enable the HC-SR04 based proximity sensor.
 //////////////////////////
 
 
@@ -153,6 +154,7 @@ void setup() {
 #ifdef ENABLE_SPEAK
   // initialize the audio out.
   initializeSpeak();
+  testSong();
 #endif
 
 #ifdef ENABLE_PROXYSENS
