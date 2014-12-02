@@ -1,5 +1,6 @@
 // Now that's the code related to the HC-SR04 sensor.
 // connection notes:
+// Has to be connected to digital pins (NOT A...)
 // Gnd -> GND
 // Echo -> 4
 // Trig -> 12
@@ -7,8 +8,8 @@
 
 #ifdef ENABLE_PROXYSENS
 
-uint8_t proxy_sens_trig = A1;  // the pin to which the HC-SR04 trigger pin has been attached.
-uint8_t proxy_sens_echo = A0;  // the pin to which the HC-SR04 echo pin has been attached.
+uint8_t proxy_sens_trig = 12;  // the pin to which the HC-SR04 trigger pin has been attached.
+uint8_t proxy_sens_echo = 4;  // the pin to which the HC-SR04 echo pin has been attached.
 int proxy_sens_basal_dist = 0;  // the basal, initial distance measured by the sensor.
 uint32_t proxy_sens_last_action_triggered = 0;  // keep track of the last triggered action.
 //int PROXY_SENS_THRESH = 1;      // the threshold value, if we get closer by PROXY_SENS_THRESH cm we trigger an action.
