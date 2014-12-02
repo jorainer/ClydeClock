@@ -20,8 +20,8 @@ int proxy_sens_basal_dist = 0;  // the basal, initial distance measured by the s
 uint32_t proxy_sens_last_action_triggered = 0;  // keep track of the last triggered action.
 //int PROXY_SENS_THRESH = 1;      // the threshold value, if we get closer by PROXY_SENS_THRESH cm we trigger an action.
 int PROXY_SENS_TRIGGER_DISTANCE = 4;    // trigger distance in cm. if we get closer we trigger an action.
-uint32_t PROXY_SENS_TRIGGER_SLEEP = 1000;  // time in ms we don't trigger another action if one was triggered.
-uint32_t PROXY_SENS_PING_SLEEP = 70;        // time in ms we wait between pings.
+uint32_t PROXY_SENS_TRIGGER_SLEEP = 700;  // time in ms we don't trigger another action if one was triggered.
+uint32_t PROXY_SENS_PING_SLEEP = 200;        // time in ms we wait between pings.
 uint32_t proxy_sens_last_ping = 0;          // last time we sent a ping.
 
 NewPing sonar( proxy_sens_trig, proxy_sens_echo, proxy_sens_max_distance );
@@ -57,8 +57,8 @@ void updateProxySens(){
     // means we will sleep for some time and don't trigger another action.
     return;
   }
-  //unsigned int uS = sonar.ping();
-  unsigned int uS = sonar.ping_median( 5 );
+  unsigned int uS = sonar.ping();
+  //unsigned int uS = sonar.ping_median( 3 );
   proxy_sens_last_ping = ps_current_time;
   int current_distance = (int)( uS / US_ROUNDTRIP_CM );
 #ifdef PROXYSENS_DEBUG

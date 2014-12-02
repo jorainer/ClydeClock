@@ -4,11 +4,13 @@
 // https://code.google.com/p/rogue-code/wiki/ToneLibraryDocumentation
 // and https://itp.nyu.edu/physcomp/labs/labs-arduino-digital-and-analog/tone-output-using-an-arduino/
 
+// using NewTone: http://forum.arduino.cc/index.php?topic=143940.0
 // again, in order to allow other stuff to happen, we will initialize a song and update that
 // song from the main loop... with a delay in between.
 
 #ifdef ENABLE_SPEAK
 
+#include <NewTone.h>
 //#include <notes.h>
 //#include <pitches.h>  // for some odd reasons that thing won't compile as it doesn't find the NOTE variables...
 //#include <Tone.h> // check if we could do that without Tone.
@@ -157,7 +159,7 @@ void testSong(){
 
 void dido(){
   int melody[] = {NOTE_C3, NOTE_C4};
-  uint8_t noteDurations[] = {4, 8};
+  uint8_t noteDurations[] = {8, 16};
   playSong( noteDurations, melody, 2 );
 }
 
@@ -170,7 +172,7 @@ void updateSpeak(){
     if( speak_is_playing ){
       // check if it's time to stop the current note.
       if( ( millis() - speak_note_start_millis ) >= ( speak_speed/(int)speak_note_durations[ speak_current_note ] )){
-	noTone( speak_out );              // stop playingthat note.
+	noNewTone( speak_out );              // stop playingthat note.
 	speak_is_playing = false;
 	//speak_out.stop();                 // stop playing that note.
 	speak_current_note++;             // move to the next note
@@ -185,7 +187,7 @@ void updateSpeak(){
       // check if we can start playing... if the pause between notes is over.
       if( millis() >= ( speak_between_note_pause + speak_note_start_millis ) ){
         speak_is_playing=true;
-	tone( speak_out, speak_notes[ speak_current_note ] );
+	NewTone( speak_out, speak_notes[ speak_current_note ] );
 	//speak_out.play( speak_notes[ speak_current_note ] );
       }
     }

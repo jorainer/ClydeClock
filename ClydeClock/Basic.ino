@@ -178,9 +178,6 @@ void stopCycle(){
 // if eye off and white light on -> switch off white light.
 // Note: would like to get public access to the white light and to the threeway_max
 void switchLights(){
-#ifdef SPEAK_DEBUG
-  dido();
-#endif
   if( wl_intensity==0 ){
     // white light is off.
     if( clyde.current_colour[ 0 ] > 0 || clyde.current_colour[ 1 ] > 1 || clyde.current_colour[ 2 ] > 0 ){
@@ -208,8 +205,11 @@ void switchLights(){
       //touchyfeely.reset( false, TOUCH_LEVEL, RELEASE_LEVEL);
     }
   }
+#ifdef ENABLE_SPEAK
+  dido();
+#endif
   // calling reset on the sensor...again.
-  touchyfeely.reset( touchyfeely_auto, TOUCH_LEVEL, RELEASE_LEVEL );
+  //touchyfeely.reset( touchyfeely_auto, TOUCH_LEVEL, RELEASE_LEVEL );
 }
 
 // start a sunrise RGB cycle
