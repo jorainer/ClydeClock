@@ -234,8 +234,11 @@ void sunset(){
 //   color cycle stuff
 
 // returns true if we're in a color cycle.
-boolean inCycle(){
-  return ( cycle_rgb || cycle_wl );
+bool inCycle(){
+  if( cycle_rgb || cycle_wl )
+    return true;
+  return false;
+  //return ( cycle_rgb || cycle_wl );
 }
 
 // start either a color select or a brightness cycle, depending on the light status.
@@ -243,9 +246,10 @@ boolean inCycle(){
 // if wl on -> brightness select
 // if both off -> switchLight.
 void startCycle(){
-  if( wl_intensity==0 ){
+  if( wl_intensity < 10 ){
     // do a rgb color cycle, if rgb is on.
-    if( clyde.current_colour[ 0 ] > 0 || clyde.current_colour[ 1 ] > 1 || clyde.current_colour[ 2 ] > 0 ){
+    if( clyde.current_colour[ 0 ] > 0 || clyde.current_colour[ 1 ] > 0 || clyde.current_colour[ 2 ] > 0 ){
+      cycle_rgb = true;
     }else{
       switchLights();
     }
@@ -265,26 +269,27 @@ void updateCycle(){
   cycle_last_update_ms = cycle_current_time;
   if( cycle_wl ){
     // cycle the white light.
-    if( wl_intensity >= 250 ){
+    if( wl_intensity >= 245 ){
       wl_increasing = false;
     }else if( wl_intensity <= 10 ){
       wl_increasing = true;
     }
     if( wl_increasing ){
-      wl_intensity+=5;
+      wl_intensity+=4;
     }else{
-      wl_intensity-=5;
+      wl_intensity-=4;
     }
     clyde.setLight( wl_intensity );
   }else{
     if( cycle_rgb ){
       double cycle_hsv[3];
       clyde.rgb2hsv( clyde.current_colour[ 0 ], clyde.current_colour[ 1 ], clyde.current_colour[ 2 ], cycle_hsv );
-      if( cycle_hsv[ 0 ] >= 365.0 ){
-	cycle_hsv[ 0 ] = 0.0;
+      Serial << "what's the hsi? " << cycle_hsv[ 0 ] << " " << cycle_hsv[ 1 ] << " " << cycle_hsv[ 2 ] << endl;
+      if( cycle_hsv[ 0 ] >= (double)0.95 ){
+      cycle_hsv[ 0 ] = (double)0.0;
       }
-      cycle_hsv[ 0 ]+=5.0;
-      clyde.setEyeHSI( (float)cycle_hsv[ 0 ], (float)cycle_hsv[ 1 ], (float)cycle_hsv[ 2 ] );
+      cycle_hsv[ 0 ]+=(double)0.02;
+      clyde.setEyeHSI( (float)cycle_hsv[ 0 ]*360.0, (float)cycle_hsv[ 1 ], (float)cycle_hsv[ 2 ] );
     }
   }
 }

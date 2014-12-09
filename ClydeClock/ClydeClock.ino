@@ -91,7 +91,7 @@ uint32_t step_durations[max_steps];     // the array with the durations for each
 boolean cycle_rgb = false;   // if that's true we're cycling.
 boolean cycle_wl = false;    // if that's true we're cycling.
 uint32_t cycle_last_update_ms = 0;  // keep track of the last time we updated the light.
-uint32_t CYCLE_SLEEP_MS = 20;       // ms to sleep between cycle steps.
+uint32_t CYCLE_SLEEP_MS = 50;       // ms to sleep between cycle steps.
 boolean wl_increasing = false;  // increment or decrement the white light intensity.
 
 

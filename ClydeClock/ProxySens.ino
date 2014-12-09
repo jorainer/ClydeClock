@@ -19,7 +19,7 @@
 int proxy_sens_basal_dist = 0;  // the basal, initial distance measured by the sensor.
 uint32_t proxy_sens_last_action_triggered = 0;  // keep track of the last triggered action.
 //int PROXY_SENS_THRESH = 1;      // the threshold value, if we get closer by PROXY_SENS_THRESH cm we trigger an action.
-int PROXY_SENS_TRIGGER_DISTANCE = 4;    // trigger distance in cm. if we get closer we trigger an action.
+int PROXY_SENS_TRIGGER_DISTANCE = 6;    // trigger distance in cm. if we get closer we trigger an action.
 uint32_t PROXY_SENS_TRIGGER_SLEEP = 700;  // time in ms we don't trigger another action if one was triggered.
 uint32_t PROXY_SENS_PING_SLEEP = 200;        // time in ms we wait between pings.
 uint32_t proxy_sens_last_ping = 0;          // last time we sent a ping.
