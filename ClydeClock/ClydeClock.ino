@@ -31,7 +31,7 @@
 //#define AFRAID_DARK_DEBUG
 //#define TOUCHY_FEELY_DEBUG
 //#define MIKE_DEBUG
-//#define PROXYSENS_DEBUG
+#define PROXYSENS_DEBUG
 //#define SPEAK_DEBUG
 //////////////////////////
 
@@ -87,6 +87,13 @@ uint8_t step_start_g = 0;               // the green intensity at the beginning 
 uint8_t step_start_b = 0;               // the blue intensity at the beginning of a cycle step.
 uint8_t step_colors[max_steps*3];       // the array with the RGB values to cycle through.
 uint32_t step_durations[max_steps];     // the array with the durations for each cycle step.
+// variables related to the color select cycle.
+boolean cycle_rgb = false;   // if that's true we're cycling.
+boolean cycle_wl = false;    // if that's true we're cycling.
+uint32_t cycle_last_update_ms = 0;  // keep track of the last time we updated the light.
+uint32_t CYCLE_SLEEP_MS = 20;       // ms to sleep between cycle steps.
+boolean wl_increasing = false;  // increment or decrement the white light intensity.
+
 
 // TouchyFeely related:
 //uint8_t leg_switch = 2;  // set this to a value from 0-5 if you want to use a leg as the light switch instead of the eye... e.g. if the eye is buggy, like the one of my Clyde.
@@ -174,32 +181,20 @@ void setup() {
 void loop() {
 
   clyde.update();
+  ///////
+  // all the rgb and white light related things:
   // check if we are in some color cycle and if so update the colors accordingly
   cycleThroughRGBColors();
   // the same for the white light
   wl_previous_intensity = wl_intensity;  // just remember the white light before fading
   fadeWhiteLight();
-  // reset the touchyfeely sensor to default values if white light is off.
-  /*  if( wl_intensity==0 && wl_previous_intensity > 0 ){
-    touchyfeely.reset( true, TOUCH_LEVEL, RELEASE_LEVEL ); // this reset causes some lag in which the sensor is unresponsive!
-    }*/
+  updateCycle();     // in case we are in a color select cycle, serve that.
 
   if(tf_enabled) touchyfeely.update();
 
   if(ad_enabled) {
     afraiddark.update();
     //checkForDarkness();
-
-    // uncomment this if you want the light sensor to control the intensity
-    // of the rgb light... the result is a little glitchy though, as it is
-    // using the raw sensor values.
-    /*
-    uint16_t light_level = afraiddark.getLight();
-    intensity = ((float)light_level)/1000.0;
-
-    Serial << "light level: " << light_level << " intensity: " << intensity << endl;
-    */
-
   }
 
 #ifdef ENABLE_CLOCK
@@ -207,7 +202,7 @@ void loop() {
 #endif
 
 #ifdef ENABLE_MIKE
-  listenForClaps();
+  updateMike();
 #endif
 
 #ifdef ENABLE_SPEAK

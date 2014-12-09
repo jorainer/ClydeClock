@@ -4,9 +4,9 @@
 
 #ifdef ENABLE_MIKE
 
-uint8_t mike_the_mic = A3;
-uint16_t signal_max = 0;
-uint16_t signal_min = 1024;
+uint8_t mike_the_mic = A3;             // the pin to which we connected the mike.
+uint16_t signal_max = 0;               // min signal
+uint16_t signal_min = 1024;            // max signal
 uint8_t sample_time = 20;              // sample time in ms.
 uint16_t NOISE_THRESHOLD = 500;
 uint16_t NOISE_THRESHOLD_DIFF = 180;   // the difference between max and min signal to trigger
@@ -40,7 +40,7 @@ void micSample(){
 /*
  * Listen for claps and trigger an event if (more than) one was detected.
  */
-void listenForClaps(){
+void updateMike(){
   micSample();
   detectPeakStart();
   detectPeakEnd();

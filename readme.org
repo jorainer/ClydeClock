@@ -39,6 +39,7 @@
 + The modified =TimeAlarms= (https://github.com/jotsetung/TimeAlarms.git) library (allows to call function =serviceAlarms= directly).
 + Remove the original =Clyde= library from the Arduino libraries folder.
 + Add all the libraries above to the Arduino libraries.
++ The functionality in /ProxySens.ino/ (proximity sensor related stuff) requires the =NewPing= library (https://code.google.com/p/arduino-new-ping/).
 
 ** Configurations<<Configurations>>
 
@@ -48,6 +49,11 @@
 
 + Define custom sunset or sunrise colors and duration in /Basic.ino/'s =sunrise= and =sunset= functions.
 
++ To connect a microphone check /Mike.ino/.
+
++ To use sound output check /Speak.ino/.
+
++ To use a proximity sensor check /Proxy.ino/.
 
 ** Usage and Notes
 
@@ -61,13 +67,17 @@
 
 + Multitouch: different actions can be triggered by different combinations of legs that are touched.
 
-+ If a microphone is available (as described in RobotGrrl's /ClydeDisco/ setup), use that to e.g. switch the lights (functionality defined in /Mike.ino/, function =listenForClaps=). Default setting: two claps: switch lights, three claps: start sunset, four claps: start sunrise.
++ If a microphone is available (as described in RobotGrrl's /ClydeDisco/ setup), use that to e.g. switch the lights (functionality defined in /Mike.ino/, function =updateMike=). This functionality can be enabled with the =#ENABLE_MIKE= in /ClydeClock.ino/. Default setting: two claps: switch lights, three claps: start sunset, four claps: start sunrise.
 
 + Audio output: refer to the hardware setup guide from RobotGrrl's /ClydeDisco/. Audio output can be enabled with the =#ENABLE_SPEAK= in /ClydeClock.ino/.
 
-+ Using proximity detection using an HC-SR04 sensor in the eye instead of the IR setup of the original Clyde.
++ Using proximity detection using an HC-SR04 sensor in the eye instead of the IR setup of the original Clyde (functionality can be enabled with the =#ENABLE_PROXYSENS= in /ClydeClock.ino/):
+  - Switch the light by moving your hand closer than 4cm to the sensor (and removing it within 500 ms).
+  - Start a white light brightness or rgb color select cycle if you keep your hand close to the sensor for more than 500 ms. The cycle will run as long as you keep your hand close to the sensor. RGB color selection cycle is started when only the RGB, but not the white light is on. Otherwise (if white light is on) the brightness selection cycle is started.
 
 ** Files and functions
+
+*Note* this list is far from complete. Better to refer to the individual files and check the function and comments there.
 
 + /Afraid.ino/: process readouts from the light sensor (AfraidOfTheDark).
 
@@ -95,13 +105,13 @@
 
 + /Eye.ino/: functions related to the eye (handler functions).
 
-+ /Mike.ino/: functions related to a connected microphone. This can be enables/disabled with the =#define ENABLE_MIKE= in /ClydeClock.ino/.
++ /Mike.ino/: functions related to a connected microphone. This can be enables/disabled with the =#define ENABLE_MIKE= in /ClydeClock.ino/. Check the comments inside the file for more information and the variables inside the file for configuration options.
 
-  - =void listenForClaps=: function to evaluate and count noise/sound peaks and start an action depending on the number of e.g. claps in a certain time span.
+  - =void updateMike=: function to evaluate and count noise/sound peaks and start an action depending on the number of e.g. claps in a certain time span.
 
-+ /ProxySens.ino/: settings and functions related to the HC-SR04 ultrasound proximity sensor used to detect touches to the eye.
++ /ProxySens.ino/: settings and functions related to the HC-SR04 ultrasound proximity sensor. This can be enabled/disabled with the =#define ENABLE_PROXYSENS=. Check the comments inside the file for description of the setup (pin connections etc.).
 
-+ /Speak.ino/: functions for audio output. This can be enabled/disabled with the =#define ENABLE_SPEAK= in /ClydeClock.ino/.
++ /Speak.ino/: functions for audio output. This can be enabled/disabled with the =#define ENABLE_SPEAK= in /ClydeClock.ino/. Configuration variables and descriptions are within the file.
 
 + /Time.ino/: functions related to time and alarm clock. This can be enabled/disabled with the =#define ENABLE_CLOCK= in /ClydeClock.ino/.
 
@@ -110,7 +120,7 @@
   - =void clydeTouched(uint8_t l)=: the handler function called if a leg of Clyde is touched. The function will change the rgb light to a pre-defined color depending on which leg was touched. Also, if =leg_switch= is set to a value from 0 to 5, it calls the =switchLights= function (useful for those Clydes for which the eye does no longer work...).
 
   - =void clydeReleased(uint8_t l)=: the handler function called if a leg of Clyde is touched.
-    
+
 
 ** TODOs							   :noexport:
 

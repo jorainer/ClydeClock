@@ -67,10 +67,6 @@ void startFadeWhiteLight(uint8_t intens[], uint32_t durations[], uint8_t no_step
 #ifdef BASIC_DEBUG
   Serial << "Basic: startFadeWhiteLight called: no_steps: " << wl_number_steps << " step_start: " << wl_step_start_intensity << " step_intensity[0]: " << wl_step_intensities[0] << " intens[0]: " << intens[0] << endl;
 #endif
-  // reset the touchy feely. that's similar to the original Clyde firmware...
-  // we're reseting it to normal levels in the update call from ClydeClock, if white light is off.
-  // unfortunately, this reset causes a lag time in which the sensor is unresponsive.
-  //touchyfeely.reset( false, TOUCH_LEVEL*8, RELEASE_LEVEL*2);
 }
 
 // cycles through a pre-defined set of colors in a pre-defined time.
@@ -169,6 +165,8 @@ void stopCycle(){
   wl_number_steps=0;
   current_step = 0;
   wl_current_step = 0;
+  cycle_rgb = false;
+  cycle_wl = false;
 }
 
 // switches the light.
@@ -231,9 +229,63 @@ void sunset(){
   startRGBCycle( sunset_colors, sunset_durations, 9 );
 }
 
-/* uint32_t myabs( uint32_t a ){ */
-/*   if( a < 0 ) */
-/*     return -a; */
-/*   return a; */
-/* } */
+/////////////////////////////////////////
+//
+//   color cycle stuff
+
+// returns true if we're in a color cycle.
+boolean inCycle(){
+  return ( cycle_rgb || cycle_wl );
+}
+
+// start either a color select or a brightness cycle, depending on the light status.
+// if rgb on and wl not -> rgb color select.
+// if wl on -> brightness select
+// if both off -> switchLight.
+void startCycle(){
+  if( wl_intensity==0 ){
+    // do a rgb color cycle, if rgb is on.
+    if( clyde.current_colour[ 0 ] > 0 || clyde.current_colour[ 1 ] > 1 || clyde.current_colour[ 2 ] > 0 ){
+    }else{
+      switchLights();
+    }
+  }else{
+    // do a brightness cycle.
+    cycle_wl = true;
+  }
+}
+
+// updates a color cycle, if one is on.
+void updateCycle(){
+  uint32_t cycle_current_time = millis();
+  if( ( cycle_current_time - cycle_last_update_ms ) < CYCLE_SLEEP_MS ){
+    // don't update too often; otherwise the color change would be too fast.
+    return;
+  }
+  cycle_last_update_ms = cycle_current_time;
+  if( cycle_wl ){
+    // cycle the white light.
+    if( wl_intensity >= 250 ){
+      wl_increasing = false;
+    }else if( wl_intensity <= 10 ){
+      wl_increasing = true;
+    }
+    if( wl_increasing ){
+      wl_intensity+=5;
+    }else{
+      wl_intensity-=5;
+    }
+    clyde.setLight( wl_intensity );
+  }else{
+    if( cycle_rgb ){
+      double cycle_hsv[3];
+      clyde.rgb2hsv( clyde.current_colour[ 0 ], clyde.current_colour[ 1 ], clyde.current_colour[ 2 ], cycle_hsv );
+      if( cycle_hsv[ 0 ] >= 365.0 ){
+	cycle_hsv[ 0 ] = 0.0;
+      }
+      cycle_hsv[ 0 ]+=5.0;
+      clyde.setEyeHSI( (float)cycle_hsv[ 0 ], (float)cycle_hsv[ 1 ], (float)cycle_hsv[ 2 ] );
+    }
+  }
+}
 

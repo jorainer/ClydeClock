@@ -30,6 +30,7 @@
 -   The modified `TimeAlarms` (<https://github.com/jotsetung/TimeAlarms.git>) library (allows to call function `serviceAlarms` directly).
 -   Remove the original `Clyde` library from the Arduino libraries folder.
 -   Add all the libraries above to the Arduino libraries.
+-   The functionality in *ProxySens.ino* (proximity sensor related stuff) requires the `NewPing` library (<https://code.google.com/p/arduino-new-ping/>).
 
 ## Configurations<a id="Configurations" name="Configurations"></a><a id="sec-1-2" name="sec-1-2"></a>
 
@@ -51,48 +52,52 @@
 
 -   Multitouch: different actions can be triggered by different combinations of legs that are touched.
 
--   If a microphone is available (as described in RobotGrrl's *ClydeDisco* setup), use that to e.g. switch the lights (functionality defined in *Mike.ino*, function `listenForClaps`). Default setting: two claps: switch lights, three claps: start sunset, four claps: start sunrise.
+-   If a microphone is available (as described in RobotGrrl's *ClydeDisco* setup), use that to e.g. switch the lights (functionality defined in *Mike.ino*, function `updateMike`). This functionality can be enabled with the `#ENABLE_MIKE` in *ClydeClock.ino*. Default setting: two claps: switch lights, three claps: start sunset, four claps: start sunrise.
 
 -   Audio output: refer to the hardware setup guide from RobotGrrl's *ClydeDisco*. Audio output can be enabled with the `#ENABLE_SPEAK` in *ClydeClock.ino*.
 
--   Using proximity detection using an HC-SR04 sensor in the eye instead of the IR setup of the original Clyde.
+-   Using proximity detection using an HC-SR04 sensor in the eye instead of the IR setup of the original Clyde (functionality can be enabled with the `#ENABLE_PROXYSENS` in *ClydeClock.ino*):
+    -   Switch the light by moving your hand closer than 4cm to the sensor (and removing it within 500 ms).
+    -   Start a white light brightness or rgb color select cycle if you keep your hand close to the sensor for more than 500 ms. The cycle will run as long as you keep your hand close to the sensor. RGB color selection cycle is started when only the RGB, but not the white light is on. Otherwise (if white light is on) the brightness selection cycle is started.
 
 ## Files and functions<a id="sec-1-5" name="sec-1-5"></a>
+
+**Note** this list is far from complete. Better to refer to the individual files and check the function and comments there.
 
 -   *Afraid.ino*: process readouts from the light sensor (AfraidOfTheDark).
     -   `checkForDarkness`: compares current and previous light intensities, and if they are below a certain threshold for a specified time it triggers the `sunset`.
 
 -   *Basic.ino*: provides basic functions.
     -   `void cycleThroughRGBColors()`: cycles through the colors defined by the global variable `step_colors` for the pre-defined durations (global variable `step_durations`). This function is intended to be called in the `update` function and requires global parameters to be set (e.g. *via* `startRGBCycle`).
-    
+
     -   `void fadeWhiteLight()`: similar to the function above, allows to cycle the white light intensities through a pre-defined set of intensities (for pre-defined durations). This function is called by the `update` function, the intensity steps and durations can be defined with the function `startFadeWhiteLight`.
-    
+
     -   `void startRGBCycle( uint8_t s_colors[], uint32_t s_durations[], uint8_t no_steps )`: sets the colors and durations for the color cycle. `s_colors` should be an array with r,g,b values from 0 to 255, `s_durations` an array with the time (in ms) to reach the defined color (length of the array should thus be length of `*s_durations` / 3); `no_steps` should be the length of the `s_durations` array.
-    
+
     -   `void startFadeWhiteLight( uint8_t intens[], uint32_t durations[], uint8_t no_steps )`: same as above, just for the white light. Also, since only a single light intensity is defined instead of r, g and b values, the length of `intens` and `durations` have to match and have to be equal to `no_steps`.
-    
+
     -   `void stopCycle()`: just resets the cycle step for rgb and white light and thus exits any cycle.
-    
+
     -   `void sunrise()`: defines sunrise colors and starts an RGB cycle through these.
-    
+
     -   `void sunset()`: defines sunset colors and starts an RGB cycle through these.
-    
+
     -   `void switchLights()`: function to switch the white light and rgb light on and off.
 
 -   *ClydeClock.ino*: the main file.
 
 -   *Eye.ino*: functions related to the eye (handler functions).
 
--   *Mike.ino*: functions related to a connected microphone. This can be enables/disabled with the `#define ENABLE_MIKE` in *ClydeClock.ino*.
-    -   `void listenForClaps`: function to evaluate and count noise/sound peaks and start an action depending on the number of e.g. claps in a certain time span.
+-   *Mike.ino*: functions related to a connected microphone. This can be enables/disabled with the `#define ENABLE_MIKE` in *ClydeClock.ino*. Check the comments inside the file for more information and the variables inside the file for configuration options.
+    -   `void updateMike`: function to evaluate and count noise/sound peaks and start an action depending on the number of e.g. claps in a certain time span.
 
--   *ProxySens.ino*: settings and functions related to the HC-SR04 ultrasound proximity sensor used to detect touches to the eye.
+-   *ProxySens.ino*: settings and functions related to the HC-SR04 ultrasound proximity sensor. This can be enabled/disabled with the `#define ENABLE_PROXYSENS`. Check the comments inside the file for description of the setup (pin connections etc.).
 
--   *Speak.ino*: functions for audio output. This can be enabled/disabled with the `#define ENABLE_SPEAK` in *ClydeClock.ino*.
+-   *Speak.ino*: functions for audio output. This can be enabled/disabled with the `#define ENABLE_SPEAK` in *ClydeClock.ino*. Configuration variables and descriptions are within the file.
 
 -   *Time.ino*: functions related to time and alarm clock. This can be enabled/disabled with the `#define ENABLE_CLOCK` in *ClydeClock.ino*.
 
 -   *TouchyFeely.ino*: contains the handler function to be called when one of Clyde's legs is touched.
     -   `void clydeTouched(uint8_t l)`: the handler function called if a leg of Clyde is touched. The function will change the rgb light to a pre-defined color depending on which leg was touched. Also, if `leg_switch` is set to a value from 0 to 5, it calls the `switchLights` function (useful for those Clydes for which the eye does no longer work&#x2026;).
-    
+
     -   `void clydeReleased(uint8_t l)`: the handler function called if a leg of Clyde is touched.

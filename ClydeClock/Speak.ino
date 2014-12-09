@@ -8,6 +8,11 @@
 // again, in order to allow other stuff to happen, we will initialize a song and update that
 // song from the main loop... with a delay in between.
 
+// Alternative 3: use the toneAC:
+// https://code.google.com/p/arduino-tone-ac/
+// http://forum.arduino.cc/index.php?topic=141844.5;wap2
+// apparently, Clyde uses an ATmega32U4 (Teensy/Leonardo), so we have to connect to pins 14 and 15; use a 100 Ohm resistor.
+
 #ifdef ENABLE_SPEAK
 
 #include <NewTone.h>
