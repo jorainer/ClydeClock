@@ -282,15 +282,96 @@ void updateCycle(){
     clyde.setLight( wl_intensity );
   }else{
     if( cycle_rgb ){
-      double cycle_hsv[3];
-      clyde.rgb2hsv( clyde.current_colour[ 0 ], clyde.current_colour[ 1 ], clyde.current_colour[ 2 ], cycle_hsv );
+      float cycle_hsv[3];
+      rgbToHsv( clyde.current_colour[ 0 ], clyde.current_colour[ 1 ], clyde.current_colour[ 2 ], cycle_hsv );
       Serial << "what's the hsi? " << cycle_hsv[ 0 ] << " " << cycle_hsv[ 1 ] << " " << cycle_hsv[ 2 ] << endl;
-      if( cycle_hsv[ 0 ] >= (double)0.95 ){
-      cycle_hsv[ 0 ] = (double)0.0;
+      if( cycle_hsv[ 0 ] >= 0.95f ){
+      cycle_hsv[ 0 ] = 0.0f;
       }
-      cycle_hsv[ 0 ]+=(double)0.02;
-      clyde.setEyeHSI( (float)cycle_hsv[ 0 ]*360.0, (float)cycle_hsv[ 1 ], (float)cycle_hsv[ 2 ] );
+      cycle_hsv[ 0 ]+=0.02f;
+      // convert back to rgb:
+      uint8_t new_rgb[3];
+      hsvToRgb( cycle_hsv[ 0 ], cycle_hsv[ 1 ], cycle_hsv[ 2 ], new_rgb );
+      clyde.setEyeRGB( new_rgb[ 0 ], new_rgb[ 1 ], new_rgb[ 2 ] );
     }
   }
 }
+
+
+// Color converting; some modidied stuff from https://github.com/ratkins/RGBConverter
+// mostly we ensure to use floats and stuff.
+/**
+* Converts an RGB color value to HSV. Conversion formula
+* adapted from http://en.wikipedia.org/wiki/HSV_color_space.
+* Assumes r, g, and b are contained in the set [0, 255] and
+* returns h, s, and v in the set [0, 1].
+*
+* @param Number r The red color value
+* @param Number g The green color value
+* @param Number b The blue color value
+* @return Array The HSV representation
+*/
+void rgbToHsv(uint8_t r, uint8_t g, uint8_t b, float hsv[]) {
+  float rd = (float)r/255.0f;
+  float gd = (float)g/255.0f;
+  float bd = (float)b/255.0f;
+  float max = threeway_max(rd, gd, bd), min = threeway_min(rd, gd, bd);
+  float h, s, v = max;
+  float d = max - min;
+  s = max == 0 ? 0 : d / max;
+  if (max == min) {
+    h = 0; // achromatic
+  } else {
+    if (max == rd) {
+      h = (gd - bd) / d + (gd < bd ? 6 : 0);
+    } else if (max == gd) {
+      h = (bd - rd) / d + 2;
+    } else if (max == bd) {
+      h = (rd - gd) / d + 4;
+    }
+    h /= 6;
+  }
+  hsv[0] = h;
+  hsv[1] = s;
+  hsv[2] = v;
+}
+
+/**
+* Converts an HSV color value to RGB. Conversion formula
+* adapted from http://en.wikipedia.org/wiki/HSV_color_space.
+* Assumes h, s, and v are contained in the set [0, 1] and
+* returns r, g, and b in the set [0, 255].
+*
+* @param Number h The hue
+* @param Number s The saturation
+* @param Number v The value
+* @return Array The RGB representation
+*/
+void hsvToRgb(float h, float s, float v, uint8_t rgb[]) {
+  float r, g, b;
+  int i = int(h * 6);
+  float f = h * 6 - i;
+  float p = v * (1 - s);
+  float q = v * (1 - f * s);
+  float t = v * (1 - (1 - f) * s);
+  switch(i % 6){
+  case 0: r = v, g = t, b = p; break;
+  case 1: r = q, g = v, b = p; break;
+  case 2: r = p, g = v, b = t; break;
+  case 3: r = p, g = q, b = v; break;
+  case 4: r = t, g = p, b = v; break;
+  case 5: r = v, g = p, b = q; break;
+  }
+  rgb[0] = (uint8_t)(r * 255);
+  rgb[1] = (uint8_t)(g * 255);
+  rgb[2] = (uint8_t)(b * 255);
+}
+
+float threeway_max(float a, float b, float c) {
+  return max(a, max(b, c));
+}
+float threeway_min(float a, float b, float c) {
+  return min(a, min(b, c));
+}
+
 
